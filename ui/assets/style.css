@@ -120,6 +120,7 @@ body { color: var(--dg-ink); font-family: var(--dg-sans); -webkit-font-smoothing
   .dg-stat-value { font-size: 28px; }
   .dg-chart-title { font-size: 19px; }
   .sa-note-text { font-size: 16px; }
+  .sa-stats-4 .dg-stat-value { font-size: 22px; }
   .sa-filter { width: 100%; overflow-x: auto; }
 }
 @media (max-width: 760px) { .dg-h1 br { display: none; } }

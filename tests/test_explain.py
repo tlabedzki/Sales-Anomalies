@@ -105,3 +105,16 @@ def test_api_key_is_read_from_the_env_file(tmp_path, monkeypatch):
     env.write_text("# local\nANTHROPIC_API_KEY=test-key\n", encoding="utf-8")
     monkeypatch.setattr(explain, "ENV_FILE", env)
     assert explain.api_key() == "test-key"
+
+
+def test_eval_graders_pass_the_template_and_catch_a_wrong_direction():
+    from evals.run import grade
+
+    b = breakdown()
+    case = {"main_cause": "discount", "direction": "down",
+            "sheets": {lang: explain.facts(b, lang) for lang in ("pl", "en")}}
+    for lang in ("pl", "en"):
+        result = grade(explain.template(case["sheets"][lang], lang), case, lang)
+        assert result["passed"], (lang, result)
+    wrong = grade("Marża w Odzież · wejścia bezpośrednie wzrosła o −3 321 zł przez rabaty.", case, "pl")
+    assert not wrong["grades"]["direction"]

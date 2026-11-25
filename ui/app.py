@@ -103,8 +103,8 @@ def timeline_view(r: report.Results, metric: str, selected: int | None) -> html.
     count = len(data)
     real = int((data["verdict"] != report.VERDICTS["false"]).sum())
     title = (f"{count} anomalies in 2023-2024, {real} of them real" if count else "No anomaly of this metric",
-             "Each dot is an anomaly: how far it moved its metric against what was expected; the bigger the dot, "
-             "the more PLN. Click one to open it.")
+             "Each dot is an anomaly at the PLN it moved its metric by, against what was expected (a log scale: "
+             "each line is ten times the one before). Click one to open it.")
     return chart_block(title, figures.timeline(data, selected), graph_id="timeline-graph")
 
 

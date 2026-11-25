@@ -181,8 +181,9 @@ def titles(n: dict) -> dict[str, tuple[str, str]]:
         return {
             "timeline": (f"{s['anomalies']} anomalii w 2023–2024: {s['hits']} prawdziwych, {s['false_alarms']} "
                          f"fałszywych alarmów",
-                         "Każda kropka to anomalia: o ile zmieniła swoją metrykę wobec oczekiwań (oś pionowa) i ile "
-                         "złotych (wielkość kropki); petrol prawdziwe, szare fałszywe, miedziana omawiana niżej."),
+                         "Każda kropka to anomalia: o ile złotych zmieniła swoją metrykę wobec oczekiwań (skala "
+                         "logarytmiczna, każda linia to dziesięć razy więcej); petrol prawdziwe, szare fałszywe "
+                         "alarmy, miedziana omawiana niżej."),
             "recall": (f"W całości wykryte: {', '.join(x.lower() for x in full[:3])}",
                        "Ile zdarzeń każdego rodzaju znalazło wykrywanie (scenariusze wstrzyknięte i zdarzenia "
                        "oznaczone przez generator)."),
@@ -194,8 +195,9 @@ def titles(n: dict) -> dict[str, tuple[str, str]]:
         }
     return {
         "timeline": (f"{s['anomalies']} anomalies in 2023–2024: {s['hits']} real, {s['false_alarms']} false alarms",
-                     "Each dot is an anomaly: how far it moved its metric against what was expected (vertical) and "
-                     "how many PLN (size); teal real, grey false, copper the one discussed below."),
+                     "Each dot is an anomaly at the PLN it moved its metric by against what was expected (a log "
+                     "scale: each line is ten times the one before); teal real, grey false, copper the one "
+                     "discussed below."),
         "recall": (f"Found in full: {', '.join(x.lower() for x in full[:3])}",
                    "How many events of each kind the check found (injected scenarios and events labelled by the "
                    "generator)."),

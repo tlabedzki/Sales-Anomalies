@@ -111,28 +111,38 @@ def bridge(b: Breakdown, lang: str = "en", height: int | None = None) -> go.Figu
     return _layout(fig, height or 40 * len(data) + 24, bargap=0.32, margin={"l": 8, "r": 96, "t": 12, "b": 8})
 
 
+def signed_log(value):
+    """PLN on a signed log scale: about 1 at PLN 1,000, 2 at 10,000, 3 at 100,000, the same below zero."""
+    return np.sign(value) * np.log10(1 + np.abs(value) / 100)
+
+
 def timeline(table: pd.DataFrame, selected: int | None = None, lang: str = "en", height: int = 340) -> go.Figure:
-    """Every anomaly on the calendar: how far it moved its metric (in % of expected), the dot sized by PLN."""
+    """Every anomaly on the calendar at the PLN it moved its metric by (signed log scale), the chosen one in copper."""
     data = table.copy()
-    data["y"] = (data["change_percent"] * 100).clip(-100, 150)
-    scale = np.sqrt(data["change"].abs() / max(data["change"].abs().max(), 1))
-    data["size"] = 9 + 22 * scale
+    data["y"] = signed_log(data["change"])
     others = data[data["anomaly_id"] != selected]
     chosen = data[data["anomaly_id"] == selected]
     fig = go.Figure()
-    for frame, color, line in ((others, t.MIST, t.PAGE), (chosen, t.ACCENT, t.PAGE)):
+    for frame, color, size in ((others, t.MIST, 13), (chosen, t.ACCENT, 17)):
         if frame.empty:
             continue
         hover = [f"{d}<br>{s} · {m}<br><b>{i18n.money(c, lang, sign=True)}</b> ({i18n.percent(p, lang)})<br>{cause}"
                  for d, s, m, c, p, cause in zip(frame["days"], frame["segment"], frame["metric"], frame["change"],
                                                  frame["change_percent"], frame["cause"], strict=True)]
         fig.add_scatter(x=frame["start"], y=frame["y"], mode="markers", customdata=frame["anomaly_id"],
-                        marker={"size": frame["size"], "color": color, "line": {"color": line, "width": 1.5},
+                        marker={"size": size, "color": color, "line": {"color": t.PAGE, "width": 1.5},
                                 "opacity": 0.95},
                         hovertext=hover, hovertemplate="%{hovertext}<extra></extra>")
     fig.add_hline(y=0, line={"color": t.MUTED, "width": 1})
-    fig.update_yaxes(ticksuffix="%", showgrid=True, gridcolor=t.LINE, zeroline=False, tickfont=_num(12, t.MUTED),
-                     fixedrange=True, range=[-112, 162])
+    ticks = [10 ** k for k in range(3, 7)]
+    values = [float(signed_log(-v)) for v in ticks[::-1]] + [0.0] + [float(signed_log(v)) for v in ticks]
+    labels = [i18n.money(-v, lang, sign=True) for v in ticks[::-1]] + ["0"]
+    labels += [i18n.money(v, lang, sign=True) for v in ticks]
+    if lang == "en":
+        labels = [label.replace("PLN ", "") for label in labels]
+    top = max(3.2, float(data["y"].abs().max()) + 0.25) if len(data) else 3.2
+    fig.update_yaxes(tickvals=values, ticktext=labels, showgrid=True, gridcolor=t.LINE, zeroline=False,
+                     tickfont=_num(12, t.MUTED), fixedrange=True, range=[-top, top])
     fig.update_xaxes(showgrid=False, tickfont=_num(12, t.MUTED), fixedrange=True, showline=False, ticks="",
                      tickformat="%b %Y", dtick="M3")
     return _layout(fig, height, margin={"l": 8, "r": 8, "t": 12, "b": 8})
