@@ -89,8 +89,11 @@ def to_grosz(parts: list[Part], observed: float, expected: float) -> int:
     raw = np.array([p.amount * 100 for p in parts], dtype=float)
     if len(parts) == 0:
         return total
-    # Scale tiny float drift so the raw parts sum to the rounded total before rounding them.
+    # Only rounding may separate the parts from the change (at most a grosz or two); anything more is a bridge
+    # that does not add up, and it must fail loudly rather than be spread over the parts.
     drift = total - raw.sum()
+    if abs(drift) > 2:
+        raise ValueError(f"The parts miss the change by {drift / 100:.2f} PLN")
     raw = raw + drift * (np.abs(raw) / np.abs(raw).sum() if np.abs(raw).sum() > 0 else 1 / len(raw))
     floors = np.floor(raw).astype(np.int64)
     remainder = int(total - floors.sum())
@@ -175,22 +178,23 @@ def _window_data(facts: ShopFacts, detection: Detection, segment: Segment, start
                   reference.fillna(0.0))
 
 
-def _one_account(facts: ShopFacts, w: Window, metric: str, change: float) -> tuple[Part | None, pd.DataFrame]:
-    """The customer who placed several orders and made at least ACCOUNT_SHARE of the change (same sign)."""
+def _one_account(facts: ShopFacts, w: Window, metric: str,
+                 change: float) -> tuple[Part | None, pd.DataFrame, int | None]:
+    """The customer who placed several orders and made at least ACCOUNT_SHARE of the change (same sign): the part,
+    the other lines, the customer."""
     lines = facts.lines[_window(facts.lines, w.start, w.end) & _segment_mask(facts.lines, w.segment)]
     value = "sales" if metric == "sales" else "margin"
     if lines.empty or change == 0:
-        return None, lines
+        return None, lines, None
     per_customer = lines.groupby("customer_id").agg(amount=(value, "sum"), orders=("order_id", "nunique"))
     candidates = per_customer[per_customer["orders"] >= 2]
     if candidates.empty:
-        return None, lines
+        return None, lines, None
     best = candidates["amount"].idxmax() if change > 0 else candidates["amount"].idxmin()
     amount = float(candidates.loc[best, "amount"])
     if amount / change < ACCOUNT_SHARE:
-        return None, lines
-    part = Part("single_account", "single_account", amount)
-    return part, lines[lines["customer_id"] != best].assign(_account=int(best))
+        return None, lines, None
+    return Part("single_account", "single_account", amount), lines[lines["customer_id"] != best], int(best)
 
 
 def _volume_parts(shop: ShopData, facts: ShopFacts, detection: Detection, w: Window, lines_actual: float,
@@ -248,15 +252,17 @@ def _price_volume(shop: ShopData, facts: ShopFacts, detection: Detection, w: Win
     observed = float(w.series["sales" if metric == "sales" else "margin_sold"].sum())
     expected = float(w.expected["sales" if metric == "sales" else "margin_sold"].sum())
     change = observed - expected
-    account, lines = _one_account(facts, w, metric, change)
+    account, lines, customer = _one_account(facts, w, metric, change)
     parts: list[Part] = []
     signals: dict = {}
     if account:
         parts.append(account)
-        signals["account"] = {"customer_id": int(lines["_account"].iloc[0]) if "_account" in lines else None}
+        signals["account"] = {"customer_id": customer}
     n1 = float(len(lines))
     n0 = float(w.expected["lines"].sum())
-    per_line_expected = expected / n0 if n0 > 0 else 0.0
+    if n0 <= 0:  # no line expected but an amount expected: count it as one expected line, so the bridge closes
+        n0 = 1.0
+    per_line_expected = expected / n0
     sums = lines[["list_net", "discount", "cogs", "shipping", "payment", "commission", "sales", "margin"]].sum()
     actual = sums / n1 if n1 > 0 else sums * 0
     ref = w.reference
@@ -288,8 +294,10 @@ def _returns(facts: ShopFacts, w: Window) -> tuple[list[Part], float, float, dic
     observed = float(w.series["return_cost"].sum())
     expected = float(w.expected["return_cost"].sum())
     back = facts.returns[_window(facts.returns, w.start, w.end) & _segment_mask(facts.returns, w.segment)]
-    cost0 = w.reference["return_cost_per_return"] or (observed / max(len(back), 1))
-    r1, r0 = float(len(back)), expected / cost0 if cost0 else 0.0
+    cost0 = float(w.reference["return_cost_per_return"])
+    if not cost0 > 0:  # no recent returns to price one: this window's own cost, or the expected amount as one return
+        cost0 = observed / len(back) if len(back) and observed > 0 else (expected if expected > 0 else 1.0)
+    r1, r0 = float(len(back)), expected / cost0
     cost1 = observed / r1 if r1 else 0.0
     # Reason mix of the recent weeks for the segment.
     before = facts.returns[_window(facts.returns, w.start - pd.Timedelta(days=63), w.start - pd.Timedelta(days=8))
@@ -349,6 +357,8 @@ def _conversion(facts: ShopFacts, detection: Detection, w: Window) -> tuple[list
     past = before.groupby("device")[["sessions", "orders"]].sum()
     rate0 = (past["orders"] / past["sessions"]).reindex(by_device.index).fillna(0)
     expected_device = by_device["sessions"] * rate0
+    if expected_device.sum() <= 0:  # no recent orders by device: split by today's sessions
+        expected_device = by_device["sessions"].astype(float)
     if expected_device.sum() > 0:
         expected_device *= orders0 / expected_device.sum()  # the model's level, the recent split by device
     lost = by_device["orders"] - expected_device

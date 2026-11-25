@@ -166,26 +166,48 @@ def facts_hash(sheet: dict) -> str:
 # Checks
 
 
-NUMBER = re.compile(r"\d+(?:[   .,]\d+)*")
+NUMBER = re.compile(r"([+\u2212]\s?(?:PLN\s)?)?(\d+(?:[ \u00a0\u202f.,]\d+)*)")
 
 
-def numbers(text: str, lang: str) -> set[float]:
-    """Every number written in a text, as a value: '12 345' and '12,345' are 12345, '3,5' (pl) and '3.5' (en)
-    are 3.5. Dates count as their parts (2024-07-01 gives 2024, 7 and 1)."""
+def signed_numbers(text: str, lang: str) -> set[tuple[str, float]]:
+    """
+    Every number written in a text with its sign: ('+', 12345.0), ('\u2212', 4321.0) or ('', 2024.0) when it has
+    none. '12 345' and '12,345' are 12345, '3,5' (pl) and '3.5' (en) are 3.5. A hyphen or dash separates (a range,
+    a date: 2024-07-01 gives 2024, 7 and 1); only + and the minus sign U+2212 count as signs.
+    """
     values = set()
-    for token in NUMBER.findall(text.replace("–", " | ").replace("-", " | ")):  # a range is two numbers
-        compact = re.sub(r"[   ]", "", token)
+    for sign, token in NUMBER.findall(text.replace("\u2013", " | ").replace("-", " | ")):
+        compact = re.sub(r"[ \u00a0\u202f]", "", token)
         # Polish: space for thousands, comma for decimals; English: comma for thousands, dot for decimals.
         compact = compact.replace(".", "").replace(",", ".") if lang == "pl" else compact.replace(",", "")
         try:
-            values.add(round(float(compact), 2))
+            values.add((sign.strip()[:1], round(float(compact), 2)))
         except ValueError:
             continue
     return values
 
 
+def numbers(text: str, lang: str) -> set[float]:
+    """The values of every number in a text, without signs."""
+    return {value for _, value in signed_numbers(text, lang)}
+
+
 def sheet_numbers(sheet: dict, lang: str) -> set[float]:
     return numbers(json.dumps(sheet, ensure_ascii=False), lang)
+
+
+def invented_numbers(text: str, sheet: dict, lang: str) -> list[float]:
+    """
+    Numbers of the note that the sheet does not have: a value the sheet never shows, or a sign the sheet does not
+    give it (a drop of \u22124 321 written as +4 321). A number written without a sign may be any of the sheet's.
+    """
+    known = signed_numbers(json.dumps(sheet, ensure_ascii=False), lang)
+    values = {value for _, value in known}
+    wrong = []
+    for sign, value in signed_numbers(text, lang):
+        if value not in values or (sign and (sign, value) not in known and ("", value) not in known):
+            wrong.append(-value if sign == "\u2212" else value)
+    return sorted(wrong)
 
 
 def sentences(text: str) -> int:
@@ -194,7 +216,7 @@ def sentences(text: str) -> int:
 
 def check(text: str, sheet: dict, lang: str) -> dict:
     """Code's verdict on a note: invented numbers, sentence and word counts."""
-    invented = sorted(numbers(text, lang) - sheet_numbers(sheet, lang))
+    invented = invented_numbers(text, sheet, lang)
     words = len(text.split())
     problems = []
     if invented:
@@ -350,7 +372,7 @@ def describe(breakdowns: list[Breakdown], langs: tuple[str, ...] = ("pl", "en"),
             item.update({"facts": sheet, "facts_hash": facts_hash(sheet), "prompt_version": PROMPT_VERSION,
                          "model": MODEL if item["source"] == "model" else None, "lang": lang})
             result[key] = item
-            if item["source"] == "model":
+            if item["attempts"]:  # the model was asked: keep the outcome (also a template after two misses)
                 cache["items"][key] = item
                 changed = True
     if changed:

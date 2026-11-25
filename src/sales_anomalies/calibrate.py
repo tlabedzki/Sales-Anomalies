@@ -15,7 +15,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from sales_anomalies.detect import SCALES, THRESHOLDS_FILE, episodes, flags, group_key
+from sales_anomalies.detect import SCALES, THRESHOLDS_FILE, by_segment, episodes, flags, group_key
 from sales_anomalies.evaluate import explains
 from sales_anomalies.truth import TruthEvent
 
@@ -26,36 +26,51 @@ BUDGET = 0
 
 
 def _false(table: pd.DataFrame, flagged: pd.DataFrame, thresholds: dict[str, float],
-           events: list[TruthEvent]) -> int:
-    found = episodes(table, flagged, thresholds)
+           events: list[TruthEvent], frames: dict) -> int:
+    found = episodes(table, flagged, thresholds, frames)
     return sum(not any(explains(e, episode) for e in events) for episode in found)
 
 
 def calibrate(table: pd.DataFrame, events: list[TruthEvent], budget: int = BUDGET) -> dict[str, dict]:
     """
-    Threshold and false-episode count of every group. Each scale is tuned with the other one switched off, on
-    the same episodes and the same evidence test as the grading (evaluate.explains).
+    Threshold and false-episode count of every group, on the same episodes and the same evidence test as the
+    grading (evaluate.explains). Each scale is tuned first with the other one switched off; then both are on
+    together and raised in turn (the weekly one first) until the group keeps within the budget, since a one-day
+    flag can grow into a longer run that the weekly threshold judges.
     """
     result = {}
-    floor = {}
     for (group, metric), rows in table.groupby(["group", "metric"]):
+        frames = by_segment(rows)
         for direction in ("up", "down"):
             keys = {scale: group_key(group, metric, direction, scale) for scale in SCALES}
-            floor = {key: float(GRID[0]) for key in keys.values()}
-            candidates = flags(rows, floor)
+            candidates = flags(rows, {key: float(GRID[0]) for key in keys.values()})
             candidates = candidates[candidates["direction"] == direction]
             sign = 1 if direction == "up" else -1
+
+            def false_with(limits: dict[int, float], candidates=candidates, sign=sign, keys=keys, frames=frames,
+                           rows=rows) -> int:
+                keep = pd.Series(False, index=candidates.index)
+                for scale, limit in limits.items():
+                    keep |= (candidates["scale"] == scale) & (sign * candidates["z"] >= limit)
+                return _false(rows, candidates[keep], {keys[s]: v for s, v in limits.items()}, events, frames)
+
+            chosen = {}
             for scale in SCALES:
-                windows = candidates[candidates["scale"] == scale]
-                other = {k: float("inf") for s_, k in keys.items() if s_ != scale}
-                chosen, count = float(GRID[-1]), 0
+                chosen[scale] = float(GRID[-1])
                 for limit in GRID:
-                    subset = windows[sign * windows["z"] >= limit]
-                    count = _false(rows, subset, {**other, keys[scale]: float(limit)}, events)
-                    if count <= budget:
-                        chosen = float(limit)
+                    off = {s: float("inf") for s in SCALES if s != scale}
+                    if false_with({**off, scale: float(limit)}) <= budget:
+                        chosen[scale] = float(limit)
                         break
-                result[keys[scale]] = {"threshold": chosen, "false": count}
+            count = false_with(chosen)
+            turn = 0
+            while count > budget and min(chosen.values()) < GRID[-1]:
+                scale = SCALES[-1 - turn % len(SCALES)]
+                chosen[scale] = min(float(GRID[-1]), chosen[scale] + 0.25)
+                count = false_with(chosen)
+                turn += 1
+            for scale in SCALES:
+                result[keys[scale]] = {"threshold": chosen[scale], "false": count}
     return result
 
 

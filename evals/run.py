@@ -41,10 +41,10 @@ STEMS = {
            "campaign": ["campaign"], "conversion": ["conversion"], "traffic": ["traffic"], "demand": ["demand"],
            "outage": ["outage"], "single_account": ["account"]},
 }
-OPPOSITE = {"pl": {"down": ["wzrost", "wzrosł", "wzrosła", "wzrosły", "wyższ"],
-                   "up": ["spad", "niższ", "zmalał"]},
-            "en": {"down": ["rise", "rose", "increase", "higher", "grew", "jump"],
-                   "up": ["drop", "fell", "fall", "decline", "lower", "decrease"]}}
+# Verbs that say the metric itself went the other way (singular: the metric is the subject); "higher discounts"
+# behind a drop of the margin is fine.
+OPPOSITE = {"pl": {"down": ["wzrosła", "wzrósł", "wzrosło"], "up": ["spadła", "spadł", "spadło"]},
+            "en": {"down": ["rose", "grew", "went up"], "up": ["fell", "dropped", "went down"]}}
 
 
 def grade(text: str, case: dict, lang: str) -> dict:
@@ -53,13 +53,15 @@ def grade(text: str, case: dict, lang: str) -> dict:
     verdict = explain.check(text, sheet, lang)
     segment_words = [w for w in sheet["segment"].lower().replace("·", " ").split() if len(w) > 3]
     change_value = next(iter(explain.numbers(sheet["change"], lang)), None)
+    flipped = ("+" if case["direction"] == "down" else "\u2212", change_value)
     grades = {
         "numbers": not verdict["invented"],
         "length": verdict["sentences"] <= 2 and verdict["words"] <= explain.MAX_WORDS,
         "cause": any(stem in lowered for stem in STEMS[lang][case["main_cause"]]),
         "segment": any(word[:5] in lowered for word in segment_words) if segment_words else True,
         "change": change_value in explain.numbers(text, lang),
-        "direction": not any(word in lowered for word in OPPOSITE[lang][case["direction"]]),
+        "direction": flipped not in explain.signed_numbers(text, lang)
+        and not any(word in lowered for word in OPPOSITE[lang][case["direction"]]),
     }
     return {"grades": grades, "passed": all(grades.values()), "invented": verdict["invented"]}
 

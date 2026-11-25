@@ -39,6 +39,10 @@ def plural_pl(count: int, one: str, few: str, many: str) -> str:
     return many
 
 
+def alarms_pl(count: int) -> str:
+    return plural_pl(count, "fałszywy alarm", "fałszywe alarmy", "fałszywych alarmów")
+
+
 def _verdict_rows(n: dict, lang: str) -> list[str]:
     rows = n["recall"]
     out = []
@@ -62,6 +66,7 @@ def blocks(n: dict) -> dict[str, str]:
     recall = n["recall"]
     dg = recall[recall["source"] == "anomaly_data"].set_index("kind")
     outages = dg.loc["shop_outage"] if "shop_outage" in dg.index else None
+    outages_found, outages_events = (outages.found, outages.events) if outages is not None else (0, 0)
     fraud = dg.loc["fraud_ring"] if "fraud_ring" in dg.index else None
     fraud_events, fraud_found = (fraud.events, fraud.found) if fraud is not None else (0, 0)
     scen = recall[recall["source"] == "scenario"]
@@ -91,16 +96,17 @@ def blocks(n: dict) -> dict[str, str]:
                   f"prawdziwych anomalii.")
         summary = (
             f"- **Trafione:** {', '.join(x.lower() for x in full['label'])} (wszystkie przypadki); "
-            f"{most_pl}; obie awarie sklepu z `anomaly_data`"
-            f"{'' if outages is None else f' ({outages.found} z {outages.events})'}. Każde z "
+            f"{most_pl}; awarie sklepu z `anomaly_data` ({outages_found} z {outages_events}). Każde z "
             f"{s['breakdowns']} rozbić sumuje się do zmiany co do grosza.\n"
             f"- **Chybione:** {', '.join(x.lower() for x in none['label'])} (0 trafień): ich zmiany mają "
             f"medianę {_n(missed_median, lang, 1)} odchylenia dziennego szumu i giną w nim. Z {fraud_events} oszustw z "
             f"`anomaly_data` wykrywanie znalazło {fraud_found}.")
+        months = round(neg["months"])
+        control_false = control.get("false_alarms", 0)
         detection = (f"![{n['titles']['timeline'][0]}](docs/img/timeline.png)\n\n"
-                     f"W okresie bez wstrzyknięć ({neg['months']:.0f} miesiące) padło {neg['false']} fałszywych "
-                     f"alarmów. Ten sam sklep bez żadnego scenariusza dał {control.get('anomalies', 0)} anomalii, w "
-                     f"tym {control.get('false_alarms', 0)} fałszywych "
+                     f"Okres bez wstrzyknięć ({months} {plural_pl(months, 'miesiąc', 'miesiące', 'miesięcy')}): "
+                     f"{neg['false']} {alarms_pl(neg['false'])}. Ten sam sklep bez żadnego scenariusza: "
+                     f"{control.get('anomalies', 0)} anomalii, w tym {control_false} {alarms_pl(control_false)} "
                      f"({_n(control.get('false_per_month', 0), lang, 2)} na miesiąc).")
         recall_text = (f"![{n['titles']['recall'][0]}](docs/img/recall.png)\n\n"
                        f"![{n['titles']['sizes'][0]}](docs/img/sizes.png)\n\n"
@@ -123,7 +129,7 @@ def blocks(n: dict) -> dict[str, str]:
                            f"{evals['invented']}, koszt {_n(evals['cost_usd'], lang, 4)} USD.")
         verdicts = (f"Wykrywanie zgłosiło {s['anomalies']} anomalii, z czego {s['false_alarms']} to fałszywe alarmy. "
                     f"Kontrole: okres bez wstrzyknięć {neg['false']} "
-                    f"{plural_pl(neg['false'], 'fałszywy alarm', 'fałszywe alarmy', 'fałszywych alarmów')}, "
+                    f"{alarms_pl(neg['false'])}, "
                     f"sklep bez scenariuszy "
                     f"{_n(control.get('false_per_month', 0), lang, 2)} fałszywego alarmu na miesiąc.\n\n"
                     "| Zdarzenie | Źródło | Znalezione |\n|---|---|---|\n" + "\n".join(_verdict_rows(n, lang)))
@@ -134,9 +140,9 @@ def blocks(n: dict) -> dict[str, str]:
                   f"{s['scenarios_total']} injected scenarios, every breakdown adds up to the change to the grosz, and "
                   f"the main cause is right in {s['main_cause_right']} of {s['main_cause_graded']} real anomalies.")
         summary = (
-            f"- **What worked:** {', '.join(x.lower() for x in full['label'])} (all found); {most_en}; both shop "
-            f"outages of "
-            f"`anomaly_data`. Each of the {s['breakdowns']} breakdowns adds up to its change to the grosz.\n"
+            f"- **What worked:** {', '.join(x.lower() for x in full['label'])} (all found); {most_en}; shop outages of "
+            f"`anomaly_data` ({outages_found} of {outages_events}). Each of the {s['breakdowns']} breakdowns adds "
+            f"up to its change to the grosz.\n"
             f"- **What missed:** {', '.join(x.lower() for x in none['label'])} (none found): their changes have "
             f"a median of {_n(missed_median, lang, 1)} deviations of the daily noise and vanish in it. Of the "
             f"{fraud_events} fraud rings in "

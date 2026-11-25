@@ -130,23 +130,26 @@ def plan(shop: ShopData, seed: int = SCENARIO_SEED) -> list[Scenario]:
         per_day = before.groupby(["category", "channel"]).size() / 56
         by_category = before.groupby("category").size() / 56
         scenario = Scenario(f"s{number:02d}", kind, start, 1, 0.0)
+        if kind == "campaign_stop" and _running_campaign(shop, start, None) is None:
+            kind = "seo_drop"  # no campaign to stop in this slot
+            scenario.kind = kind
         if kind == "discount":
-            cells = per_day[per_day >= 4].index
+            cells = per_day[per_day >= 4].index if (per_day >= 4).any() else per_day.nlargest(5).index
             scenario.category, scenario.channel = cells[rng.integers(len(cells))]
             scenario.days, scenario.size = int(rng.integers(3, 10)), float(rng.choice([0.15, 0.25, 0.35, 0.5]))
         elif kind == "price_error":
-            names = by_category[by_category >= 15].index
+            names = _enough(by_category, 15)
             scenario.category = names[rng.integers(len(names))]
             scenario.days, scenario.size = int(rng.integers(2, 6)), float(rng.choice([0.3, 0.45, 0.6]))
         elif kind == "return_wave":
-            names = by_category[by_category >= 8].index
+            names = _enough(by_category, 8)
             scenario.category = names[rng.integers(len(names))]
             scenario.days, scenario.size = int(rng.integers(3, 7)), float(rng.choice([0.25, 0.4, 0.6]))
         elif kind == "carrier_surcharge":
             scenario.detail = str(rng.choice(["InPost parcel locker", "InPost parcel locker", "DPD", "DHL"]))
             scenario.days, scenario.size = int(rng.integers(5, 12)), float(rng.choice([1.0, 2.0, 3.0]))
         elif kind == "competitor_undercut":
-            names = by_category[by_category >= 8].index
+            names = _enough(by_category, 8)
             scenario.category = names[rng.integers(len(names))]
             scenario.detail = str(rng.choice(["Frugalia", "Mercatoria", "Fulmina"]))
             scenario.days, scenario.size = int(rng.integers(6, 12)), float(rng.choice([0.35, 0.5, 0.7]))
@@ -170,12 +173,21 @@ def plan(shop: ShopData, seed: int = SCENARIO_SEED) -> list[Scenario]:
     return scenarios
 
 
-def _running_campaign(shop: ShopData, start: pd.Timestamp, rng: np.random.Generator) -> pd.Series:
+def _enough(per_day: pd.Series, least: float) -> pd.Index:
+    """Segments with at least `least` order lines a day; the five busiest when none has that many."""
+    chosen = per_day[per_day >= least].index
+    return chosen if len(chosen) else per_day.nlargest(5).index
+
+
+def _running_campaign(shop: ShopData, start: pd.Timestamp, rng: np.random.Generator | None) -> pd.Series | None:
+    """A campaign running in the slot (None when there is none); without rng only says whether there is one."""
     campaigns = shop.campaigns[shop.campaigns["channel"].isin(["social", "affiliate", "paid_search"])]
     window_end = start + pd.Timedelta(days=SLOT_DAYS - 4)
     running = campaigns[(campaigns["start_date"] <= window_end - pd.Timedelta(days=2))
                         & (campaigns["end_date"] >= start + pd.Timedelta(days=2))]
-    return running.iloc[int(rng.integers(len(running)))]
+    if running.empty:
+        return None
+    return running.iloc[int(rng.integers(len(running)))] if rng is not None else running.iloc[0]
 
 
 # ---------------------------------------------------------------------------------------------------------------

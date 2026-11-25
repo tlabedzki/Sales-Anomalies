@@ -136,3 +136,9 @@ def test_most_specific_keeps_the_cell_that_carries_its_category():
         [{"segment": "Clothing|*", "metric": "sales", "date": d, "impact": -100.0} for d in days]
     detect.most_specific(spread, pd.DataFrame(rows))
     assert [e.kept for e in spread] == [True, False]
+
+
+def test_a_bridge_that_does_not_add_up_fails_loudly():
+    parts = [Part("prices", "prices", -100.0)]
+    with pytest.raises(ValueError, match="miss the change"):
+        to_grosz(parts, observed=1000.0, expected=2000.0)

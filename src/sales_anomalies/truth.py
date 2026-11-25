@@ -80,13 +80,22 @@ def dg_events(shop: ShopData, facts: ShopFacts) -> list[TruthEvent]:
             back = facts.returns[facts.returns["order_line_id"].isin(ordered["order_line_id"])]
             if back.empty:
                 continue
+            # Only the returns above the usual rate of the category belong to the spike.
+            spike = re.search(r"(\d+)% of the time", row.description)
+            spike_rate = int(spike.group(1)) / 100 if spike else len(back) / len(ordered)
+            category = ordered["category"].iloc[0]
+            same = lines[(lines["category"] == category) & (lines["date"] < start)]
+            usual = facts.returns["order_line_id"].isin(same["order_line_id"]).sum() / max(len(same), 1)
+            excess = max(0.0, 1 - usual / spike_rate) if spike_rate > 0 else 0.0
             segments = sorted({Segment(c, ch).key for c, ch in zip(back["category"], back["channel"], strict=True)})
             contribution = back.groupby(["date", "category", "channel"])["return_cost"].sum().reset_index()
-            contribution = contribution.assign(sales=0.0, margin_sold=0.0)
+            contribution = contribution.assign(sales=0.0, margin_sold=0.0,
+                                               return_cost=contribution["return_cost"] * excess)
             events.append(TruthEvent(event_id, "anomaly_data", row.anomaly_type, CAUSE_OF_TYPE[row.anomaly_type],
                                      back["date"].min(), back["date"].max(), segments, ["returns"],
-                                     -float(back["return_cost"].sum()), row.description,
-                                     {"product_id": product, "returns": len(back)}, contribution))
+                                     -float(back["return_cost"].sum()) * excess, row.description,
+                                     {"product_id": product, "returns": len(back), "excess_share": excess},
+                                     contribution))
     return events
 
 

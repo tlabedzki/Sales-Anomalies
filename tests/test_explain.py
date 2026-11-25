@@ -35,7 +35,7 @@ def test_check_rejects_an_invented_number_and_accepts_the_sheet():
     assert explain.check(good, sheet, "pl")["ok"], explain.check(good, sheet, "pl")
     bad = good.replace(sheet["change"], "−3 400 zł")
     verdict = explain.check(bad, sheet, "pl")
-    assert not verdict["ok"] and 3400 in verdict["invented"]
+    assert not verdict["ok"] and -3400 in verdict["invented"]   # a drop written with another value
     rounded = good + " To około 3,3 tys. zł."
     assert not explain.check(rounded, sheet, "pl")["ok"]
 
@@ -118,3 +118,23 @@ def test_eval_graders_pass_the_template_and_catch_a_wrong_direction():
         assert result["passed"], (lang, result)
     wrong = grade("Marża w Odzież · wejścia bezpośrednie wzrosła o −3 321 zł przez rabaty.", case, "pl")
     assert not wrong["grades"]["direction"]
+
+
+def test_a_flipped_sign_is_an_invented_number():
+    sheet = explain.facts(breakdown(), "pl")
+    good = explain.template(sheet, "pl")
+    flipped = good.replace(sheet["change"], sheet["change"].replace("−", "+"))
+    assert not explain.check(flipped, sheet, "pl")["ok"]
+    unsigned = good.replace(sheet["change"], sheet["change"].replace("−", ""))
+    assert explain.check(unsigned, sheet, "pl")["ok"]   # a number without a sign may be the sheet's
+
+
+def test_polish_plurals_in_the_readme():
+    import sys
+
+    sys.path.insert(0, str(explain.ROOT / "scripts"))
+    from readme_blocks import plural_pl
+
+    forms = ("alarm", "alarmy", "alarmów")
+    assert [plural_pl(n, *forms) for n in (1, 2, 5, 12, 22, 25)] == \
+        ["alarm", "alarmy", "alarmów", "alarmów", "alarmy", "alarmów"]

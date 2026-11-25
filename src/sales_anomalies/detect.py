@@ -382,13 +382,19 @@ def run_score(span: pd.DataFrame, direction: str) -> float:
     return float(span[f"d_{direction}"].sum() / spread) if spread > 0 else 0.0
 
 
-def episodes(table: pd.DataFrame, flagged: pd.DataFrame, thresholds: dict[str, float]) -> list[Episode]:
+def by_segment(table: pd.DataFrame) -> dict:
+    """The table split by segment and metric, indexed by day (episodes() reads it many times in calibration)."""
+    return {key: frame.set_index("date") for key, frame in table.groupby(["segment", "metric"])}
+
+
+def episodes(table: pd.DataFrame, flagged: pd.DataFrame, thresholds: dict[str, float],
+             frames: dict | None = None) -> list[Episode]:
     """
     Merge the flagged windows of a segment, metric and direction; split them into runs of the days that move with
     them (|daily z| at least CORE_Z in the direction, a pause of at most one day); keep a run only if it passes on
     its own: its z the threshold of its scale (one day or longer) and its impact the materiality.
     """
-    by_key = {key: frame.set_index("date") for key, frame in table.groupby(["segment", "metric"])}
+    by_key = frames if frames is not None else by_segment(table)
     result = []
     groups = flagged.groupby(["segment", "level", "metric", "direction"])
     for (segment, level, metric, direction), windows in groups:
