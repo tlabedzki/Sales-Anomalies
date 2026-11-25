@@ -140,7 +140,7 @@ def recall_figure(rows: pd.DataFrame, lang: str) -> go.Figure:
     fig.update_yaxes(autorange="reversed", showgrid=False, ticks="", tickfont={"color": t.TEXT}, fixedrange=True,
                      ticklabelstandoff=8)
     fig.update_xaxes(visible=False, range=[0, 1.22], fixedrange=True)
-    return figures._layout(fig, 30 * len(rows) + 24, bargap=0.3, margin={"l": 8, "r": 8, "t": 8, "b": 8})
+    return figures._layout(fig, 25 * len(rows) + 20, bargap=0.28, margin={"l": 8, "r": 8, "t": 8, "b": 8})
 
 
 def size_figure(events: pd.DataFrame, lang: str) -> go.Figure:
@@ -154,11 +154,11 @@ def size_figure(events: pd.DataFrame, lang: str) -> go.Figure:
                         hoverinfo="skip")
     fig.update_yaxes(categoryorder="array", categoryarray=order[::-1], showgrid=False, ticks="",
                      tickfont={"color": t.TEXT}, fixedrange=True, ticklabelstandoff=8)
+    ticks = [0.2, 0.5, 1, 2, 5, 10, 20, 50, 100]
+    labels = [f"{v:g}".replace(".", ",") if lang == "pl" else f"{v:g}" for v in ticks]
     fig.update_xaxes(type="log", showgrid=True, gridcolor=t.LINE, zeroline=False, tickfont=figures._num(12, t.MUTED),
-                     fixedrange=True, tickvals=[0.5, 1, 2, 5, 10, 20, 50, 100], ticktext=["0,5" if lang == "pl"
-                                                                                       else "0.5", "1", "2", "5",
-                                                                                       "10", "20", "50", "100"])
-    fig = figures._layout(fig, 30 * len(order) + 70, margin={"l": 8, "r": 8, "t": 8, "b": 8})
+                     fixedrange=True, tickvals=ticks, ticktext=labels)
+    fig = figures._layout(fig, 26 * len(order) + 64, margin={"l": 8, "r": 8, "t": 8, "b": 8})
     fig.update_layout(showlegend=True, legend={"orientation": "h", "y": -0.18, "x": 0, "font": {"color": t.TEXT}})
     return fig
 

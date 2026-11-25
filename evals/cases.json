@@ -1,0 +1,1204 @@
+[
+ {
+  "id": "c01",
+  "anomaly": "Clothing|social|sales|2023-05-26|2023-06-08",
+  "main_cause": "campaign",
+  "direction": "up",
+  "sheets": {
+   "pl": {
+    "segment": "Odzież · media społecznościowe",
+    "metric": "sprzedaż",
+    "days": "26 maja – 8 czerwca 2023",
+    "length": "14 dni",
+    "direction": "wzrost",
+    "actual": "714 323 zł",
+    "expected": "348 527 zł",
+    "change": "+365 797 zł",
+    "change_percent": "+105%",
+    "main_cause": "kampania",
+    "causes": [
+     {
+      "cause": "kampania",
+      "amount": "+370 849 zł"
+     },
+     {
+      "cause": "popyt",
+      "amount": "+25 738 zł"
+     },
+     {
+      "cause": "rabaty",
+      "amount": "+529 zł"
+     }
+    ],
+    "evidence": [
+     "linie zamówień: 1 471 zamiast oczekiwanych 689",
+     "sesje: 80 500 zamiast oczekiwanych 39 533",
+     "trwała kampania Social 2023-05-22, Social 2023-05-25, Social 2023-05-27, Social 2023-05-27"
+    ],
+    "suggested_check": "sprawdzić, czy kampania wyświetla reklamy"
+   },
+   "en": {
+    "segment": "Clothing · social media",
+    "metric": "sales",
+    "days": "26 May – 8 June 2023",
+    "length": "14 days",
+    "direction": "rise",
+    "actual": "PLN 714,323",
+    "expected": "PLN 348,527",
+    "change": "+PLN 365,797",
+    "change_percent": "+105%",
+    "main_cause": "a campaign",
+    "causes": [
+     {
+      "cause": "a campaign",
+      "amount": "+PLN 370,849"
+     },
+     {
+      "cause": "demand",
+      "amount": "+PLN 25,738"
+     },
+     {
+      "cause": "discounts",
+      "amount": "+PLN 529"
+     }
+    ],
+    "evidence": [
+     "order lines: 1,471 instead of the expected 689",
+     "sessions: 80,500 instead of the expected 39,533",
+     "campaign running: Social 2023-05-22, Social 2023-05-25, Social 2023-05-27, Social 2023-05-27"
+    ],
+    "suggested_check": "check that the campaign is still serving ads"
+   }
+  }
+ },
+ {
+  "id": "c02",
+  "anomaly": "*|*|conversion|2023-08-10|2023-08-11",
+  "main_cause": "conversion",
+  "direction": "down",
+  "sheets": {
+   "pl": {
+    "segment": "cały sklep",
+    "metric": "konwersja",
+    "days": "10–11 sierpnia 2023",
+    "length": "2 dni",
+    "direction": "spadek",
+    "actual": "351 485 zł",
+    "expected": "676 987 zł",
+    "change": "−325 502 zł",
+    "change_percent": "−48%",
+    "main_cause": "konwersja",
+    "causes": [
+     {
+      "cause": "konwersja",
+      "amount": "−330 116 zł"
+     }
+    ],
+    "evidence": [
+     "zamówienia: 485 zamiast oczekiwanych 934",
+     "najwięcej na urządzeniach: telefony"
+    ],
+    "suggested_check": "sprawdzić koszyk i płatności na telefonach",
+    "metric_note": "zmiana w złotych to sprzedaż utraconych albo dodatkowych zamówień"
+   },
+   "en": {
+    "segment": "whole shop",
+    "metric": "conversion",
+    "days": "10–11 August 2023",
+    "length": "2 days",
+    "direction": "drop",
+    "actual": "PLN 351,485",
+    "expected": "PLN 676,987",
+    "change": "−PLN 325,502",
+    "change_percent": "−48%",
+    "main_cause": "conversion",
+    "causes": [
+     {
+      "cause": "conversion",
+      "amount": "−PLN 330,116"
+     }
+    ],
+    "evidence": [
+     "orders: 485 instead of the expected 934",
+     "mostly on mobile"
+    ],
+    "suggested_check": "check the cart and payments on phones",
+    "metric_note": "the change in PLN is the sales of the orders lost or gained"
+   }
+  }
+ },
+ {
+  "id": "c03",
+  "anomaly": "Clothing|*|returns|2023-07-15|2023-07-24",
+  "main_cause": "returns",
+  "direction": "up",
+  "sheets": {
+   "pl": {
+    "segment": "Odzież",
+    "metric": "koszt zwrotów",
+    "days": "15–24 lipca 2023",
+    "length": "10 dni",
+    "direction": "wzrost",
+    "actual": "275 889 zł",
+    "expected": "118 336 zł",
+    "change": "+157 553 zł",
+    "change_percent": "+133%",
+    "main_cause": "zwroty",
+    "causes": [
+     {
+      "cause": "zwroty",
+      "amount": "+157 553 zł"
+     }
+    ],
+    "evidence": [
+     "zwroty: 783 zamiast oczekiwanych 459",
+     "najczęstszy powód: wadliwy"
+    ],
+    "suggested_check": "sprawdzić partię produktu z największą liczbą zwrotów"
+   },
+   "en": {
+    "segment": "Clothing",
+    "metric": "cost of returns",
+    "days": "15–24 July 2023",
+    "length": "10 days",
+    "direction": "rise",
+    "actual": "PLN 275,889",
+    "expected": "PLN 118,336",
+    "change": "+PLN 157,553",
+    "change_percent": "+133%",
+    "main_cause": "returns",
+    "causes": [
+     {
+      "cause": "returns",
+      "amount": "+PLN 157,553"
+     }
+    ],
+    "evidence": [
+     "returns: 783 instead of the expected 459",
+     "most common reason: defective"
+    ],
+    "suggested_check": "check the batch of the most returned product"
+   }
+  }
+ },
+ {
+  "id": "c04",
+  "anomaly": "*|*|margin|2024-05-26|2024-05-26",
+  "main_cause": "outage",
+  "direction": "down",
+  "sheets": {
+   "pl": {
+    "segment": "cały sklep",
+    "metric": "marża",
+    "days": "26 maja 2024",
+    "length": "1 dzień",
+    "direction": "spadek",
+    "actual": "5 616 zł",
+    "expected": "111 524 zł",
+    "change": "−105 908 zł",
+    "change_percent": "−95%",
+    "main_cause": "awaria sklepu",
+    "causes": [
+     {
+      "cause": "awaria sklepu",
+      "amount": "−109 811 zł"
+     },
+     {
+      "cause": "ceny i asortyment",
+      "amount": "−3 411 zł"
+     },
+     {
+      "cause": "opłaty za płatności",
+      "amount": "−141 zł"
+     }
+    ],
+    "evidence": [
+     "linie zamówień: 48 zamiast oczekiwanych 610",
+     "sesje: 347 zamiast oczekiwanych 5 134"
+    ],
+    "suggested_check": "sprawdzić dostępność sklepu i logi"
+   },
+   "en": {
+    "segment": "whole shop",
+    "metric": "margin",
+    "days": "26 May 2024",
+    "length": "1 day",
+    "direction": "drop",
+    "actual": "PLN 5,616",
+    "expected": "PLN 111,524",
+    "change": "−PLN 105,908",
+    "change_percent": "−95%",
+    "main_cause": "a shop outage",
+    "causes": [
+     {
+      "cause": "a shop outage",
+      "amount": "−PLN 109,811"
+     },
+     {
+      "cause": "prices and product mix",
+      "amount": "−PLN 3,411"
+     },
+     {
+      "cause": "payment fees",
+      "amount": "−PLN 141"
+     }
+    ],
+    "evidence": [
+     "order lines: 48 instead of the expected 610",
+     "sessions: 347 instead of the expected 5,134"
+    ],
+    "suggested_check": "check the shop's uptime and logs"
+   }
+  }
+ },
+ {
+  "id": "c05",
+  "anomaly": "Pet Supplies|*|sales|2024-11-23|2024-11-29",
+  "main_cause": "traffic",
+  "direction": "up",
+  "sheets": {
+   "pl": {
+    "segment": "Zwierzęta",
+    "metric": "sprzedaż",
+    "days": "23–29 listopada 2024",
+    "length": "7 dni",
+    "direction": "wzrost",
+    "actual": "265 063 zł",
+    "expected": "197 205 zł",
+    "change": "+67 859 zł",
+    "change_percent": "+34%",
+    "main_cause": "ruch na stronie",
+    "causes": [
+     {
+      "cause": "ruch na stronie",
+      "amount": "+37 799 zł"
+     },
+     {
+      "cause": "popyt",
+      "amount": "+30 719 zł"
+     },
+     {
+      "cause": "ceny i asortyment",
+      "amount": "+10 312 zł"
+     }
+    ],
+    "evidence": [
+     "linie zamówień: 810 zamiast oczekiwanych 600",
+     "sesje: 131 278 zamiast oczekiwanych 111 375"
+    ],
+    "suggested_check": "sprawdzić pozycje w wyszukiwarce i źródła ruchu"
+   },
+   "en": {
+    "segment": "Pet Supplies",
+    "metric": "sales",
+    "days": "23–29 November 2024",
+    "length": "7 days",
+    "direction": "rise",
+    "actual": "PLN 265,063",
+    "expected": "PLN 197,205",
+    "change": "+PLN 67,859",
+    "change_percent": "+34%",
+    "main_cause": "site traffic",
+    "causes": [
+     {
+      "cause": "site traffic",
+      "amount": "+PLN 37,799"
+     },
+     {
+      "cause": "demand",
+      "amount": "+PLN 30,719"
+     },
+     {
+      "cause": "prices and product mix",
+      "amount": "+PLN 10,312"
+     }
+    ],
+    "evidence": [
+     "order lines: 810 instead of the expected 600",
+     "sessions: 131,278 instead of the expected 111,375"
+    ],
+    "suggested_check": "check search rankings and traffic sources"
+   }
+  }
+ },
+ {
+  "id": "c06",
+  "anomaly": "Clothing|direct|margin|2024-05-08|2024-05-14",
+  "main_cause": "traffic",
+  "direction": "up",
+  "sheets": {
+   "pl": {
+    "segment": "Odzież · wejścia bezpośrednie",
+    "metric": "marża",
+    "days": "8–14 maja 2024",
+    "length": "7 dni",
+    "direction": "wzrost",
+    "actual": "89 144 zł",
+    "expected": "46 476 zł",
+    "change": "+42 668 zł",
+    "change_percent": "+92%",
+    "main_cause": "ruch na stronie",
+    "causes": [
+     {
+      "cause": "ruch na stronie",
+      "amount": "+23 117 zł"
+     },
+     {
+      "cause": "popyt",
+      "amount": "+14 613 zł"
+     },
+     {
+      "cause": "ceny i asortyment",
+      "amount": "+11 688 zł"
+     }
+    ],
+    "evidence": [
+     "linie zamówień: 374 zamiast oczekiwanych 204",
+     "sesje: 5 785 zamiast oczekiwanych 4 030"
+    ],
+    "suggested_check": "sprawdzić pozycje w wyszukiwarce i źródła ruchu"
+   },
+   "en": {
+    "segment": "Clothing · direct",
+    "metric": "margin",
+    "days": "8–14 May 2024",
+    "length": "7 days",
+    "direction": "rise",
+    "actual": "PLN 89,144",
+    "expected": "PLN 46,476",
+    "change": "+PLN 42,668",
+    "change_percent": "+92%",
+    "main_cause": "site traffic",
+    "causes": [
+     {
+      "cause": "site traffic",
+      "amount": "+PLN 23,117"
+     },
+     {
+      "cause": "demand",
+      "amount": "+PLN 14,613"
+     },
+     {
+      "cause": "prices and product mix",
+      "amount": "+PLN 11,688"
+     }
+    ],
+    "evidence": [
+     "order lines: 374 instead of the expected 204",
+     "sessions: 5,785 instead of the expected 4,030"
+    ],
+    "suggested_check": "check search rankings and traffic sources"
+   }
+  }
+ },
+ {
+  "id": "c07",
+  "anomaly": "*|*|costs|2023-01-08|2023-01-16",
+  "main_cause": "shipping",
+  "direction": "up",
+  "sheets": {
+   "pl": {
+    "segment": "cały sklep",
+    "metric": "koszty obsługi zamówień",
+    "days": "8–16 stycznia 2023",
+    "length": "9 dni",
+    "direction": "wzrost",
+    "actual": "117 943 zł",
+    "expected": "79 823 zł",
+    "change": "+38 120 zł",
+    "change_percent": "+48%",
+    "main_cause": "koszty wysyłki",
+    "causes": [
+     {
+      "cause": "koszty wysyłki",
+      "amount": "+41 592 zł"
+     },
+     {
+      "cause": "prowizja afiliacyjna",
+      "amount": "+934 zł"
+     }
+    ],
+    "evidence": [
+     "InPost parcel locker: koszt paczki +300%"
+    ],
+    "suggested_check": "sprawdzić stawki przewoźnika"
+   },
+   "en": {
+    "segment": "whole shop",
+    "metric": "order handling costs",
+    "days": "8–16 January 2023",
+    "length": "9 days",
+    "direction": "rise",
+    "actual": "PLN 117,943",
+    "expected": "PLN 79,823",
+    "change": "+PLN 38,120",
+    "change_percent": "+48%",
+    "main_cause": "shipping costs",
+    "causes": [
+     {
+      "cause": "shipping costs",
+      "amount": "+PLN 41,592"
+     },
+     {
+      "cause": "affiliate commission",
+      "amount": "+PLN 934"
+     }
+    ],
+    "evidence": [
+     "InPost parcel locker: cost per parcel +300%"
+    ],
+    "suggested_check": "check the carrier's rates"
+   }
+  }
+ },
+ {
+  "id": "c08",
+  "anomaly": "Health|direct|sales|2023-11-11|2023-11-17",
+  "main_cause": "demand",
+  "direction": "up",
+  "sheets": {
+   "pl": {
+    "segment": "Zdrowie · wejścia bezpośrednie",
+    "metric": "sprzedaż",
+    "days": "11–17 listopada 2023",
+    "length": "7 dni",
+    "direction": "wzrost",
+    "actual": "68 874 zł",
+    "expected": "38 622 zł",
+    "change": "+30 252 zł",
+    "change_percent": "+78%",
+    "main_cause": "popyt",
+    "causes": [
+     {
+      "cause": "popyt",
+      "amount": "+12 526 zł"
+     },
+     {
+      "cause": "ceny i asortyment",
+      "amount": "+10 821 zł"
+     },
+     {
+      "cause": "ruch na stronie",
+      "amount": "+9 660 zł"
+     }
+    ],
+    "evidence": [
+     "linie zamówień: 353 zamiast oczekiwanych 227"
+    ],
+    "suggested_check": "obserwować kategorię w kolejnych dniach"
+   },
+   "en": {
+    "segment": "Health · direct",
+    "metric": "sales",
+    "days": "11–17 November 2023",
+    "length": "7 days",
+    "direction": "rise",
+    "actual": "PLN 68,874",
+    "expected": "PLN 38,622",
+    "change": "+PLN 30,252",
+    "change_percent": "+78%",
+    "main_cause": "demand",
+    "causes": [
+     {
+      "cause": "demand",
+      "amount": "+PLN 12,526"
+     },
+     {
+      "cause": "prices and product mix",
+      "amount": "+PLN 10,821"
+     },
+     {
+      "cause": "site traffic",
+      "amount": "+PLN 9,660"
+     }
+    ],
+    "evidence": [
+     "order lines: 353 instead of the expected 227"
+    ],
+    "suggested_check": "watch the category over the next days"
+   }
+  }
+ },
+ {
+  "id": "c09",
+  "anomaly": "Electronics|*|margin|2023-11-27|2023-11-27",
+  "main_cause": "prices",
+  "direction": "up",
+  "sheets": {
+   "pl": {
+    "segment": "Elektronika",
+    "metric": "marża",
+    "days": "27 listopada 2023",
+    "length": "1 dzień",
+    "direction": "wzrost",
+    "actual": "36 126 zł",
+    "expected": "6 218 zł",
+    "change": "+29 908 zł",
+    "change_percent": "+481%",
+    "main_cause": "ceny i asortyment",
+    "causes": [
+     {
+      "cause": "ceny i asortyment",
+      "amount": "+55 364 zł"
+     },
+     {
+      "cause": "prowizja afiliacyjna",
+      "amount": "+361 zł"
+     },
+     {
+      "cause": "ruch na stronie",
+      "amount": "+351 zł"
+     }
+    ],
+    "evidence": [
+     "linie zamówień: 183 zamiast oczekiwanych 174"
+    ],
+    "suggested_check": "sprawdzić cennik najlepiej sprzedających się produktów"
+   },
+   "en": {
+    "segment": "Electronics",
+    "metric": "margin",
+    "days": "27 November 2023",
+    "length": "1 day",
+    "direction": "rise",
+    "actual": "PLN 36,126",
+    "expected": "PLN 6,218",
+    "change": "+PLN 29,908",
+    "change_percent": "+481%",
+    "main_cause": "prices and product mix",
+    "causes": [
+     {
+      "cause": "prices and product mix",
+      "amount": "+PLN 55,364"
+     },
+     {
+      "cause": "affiliate commission",
+      "amount": "+PLN 361"
+     },
+     {
+      "cause": "site traffic",
+      "amount": "+PLN 351"
+     }
+    ],
+    "evidence": [
+     "order lines: 183 instead of the expected 174"
+    ],
+    "suggested_check": "check the price list of the best sellers"
+   }
+  }
+ },
+ {
+  "id": "c10",
+  "anomaly": "*|affiliate|costs|2024-06-29|2024-07-08",
+  "main_cause": "commission",
+  "direction": "up",
+  "sheets": {
+   "pl": {
+    "segment": "kanał afiliacja",
+    "metric": "koszty obsługi zamówień",
+    "days": "29 czerwca – 8 lipca 2024",
+    "length": "10 dni",
+    "direction": "wzrost",
+    "actual": "52 092 zł",
+    "expected": "22 454 zł",
+    "change": "+29 638 zł",
+    "change_percent": "+132%",
+    "main_cause": "prowizja afiliacyjna",
+    "causes": [
+     {
+      "cause": "prowizja afiliacyjna",
+      "amount": "+29 489 zł"
+     },
+     {
+      "cause": "koszty wysyłki",
+      "amount": "+200 zł"
+     }
+    ],
+    "evidence": [],
+    "suggested_check": "sprawdzić rozliczenie z siecią afiliacyjną"
+   },
+   "en": {
+    "segment": "affiliate channel",
+    "metric": "order handling costs",
+    "days": "29 June – 8 July 2024",
+    "length": "10 days",
+    "direction": "rise",
+    "actual": "PLN 52,092",
+    "expected": "PLN 22,454",
+    "change": "+PLN 29,638",
+    "change_percent": "+132%",
+    "main_cause": "affiliate commission",
+    "causes": [
+     {
+      "cause": "affiliate commission",
+      "amount": "+PLN 29,489"
+     },
+     {
+      "cause": "shipping costs",
+      "amount": "+PLN 200"
+     }
+    ],
+    "evidence": [],
+    "suggested_check": "check the affiliate network's invoice"
+   }
+  }
+ },
+ {
+  "id": "c11",
+  "anomaly": "*|*|conversion|2024-01-29|2024-01-30",
+  "main_cause": "conversion",
+  "direction": "down",
+  "sheets": {
+   "pl": {
+    "segment": "cały sklep",
+    "metric": "konwersja",
+    "days": "29–30 stycznia 2024",
+    "length": "2 dni",
+    "direction": "spadek",
+    "actual": "305 331 zł",
+    "expected": "601 858 zł",
+    "change": "−296 527 zł",
+    "change_percent": "−49%",
+    "main_cause": "konwersja",
+    "causes": [
+     {
+      "cause": "konwersja",
+      "amount": "−300 876 zł"
+     }
+    ],
+    "evidence": [
+     "zamówienia: 436 zamiast oczekiwanych 859",
+     "najwięcej na urządzeniach: telefony"
+    ],
+    "suggested_check": "sprawdzić koszyk i płatności na telefonach",
+    "metric_note": "zmiana w złotych to sprzedaż utraconych albo dodatkowych zamówień"
+   },
+   "en": {
+    "segment": "whole shop",
+    "metric": "conversion",
+    "days": "29–30 January 2024",
+    "length": "2 days",
+    "direction": "drop",
+    "actual": "PLN 305,331",
+    "expected": "PLN 601,858",
+    "change": "−PLN 296,527",
+    "change_percent": "−49%",
+    "main_cause": "conversion",
+    "causes": [
+     {
+      "cause": "conversion",
+      "amount": "−PLN 300,876"
+     }
+    ],
+    "evidence": [
+     "orders: 436 instead of the expected 859",
+     "mostly on mobile"
+    ],
+    "suggested_check": "check the cart and payments on phones",
+    "metric_note": "the change in PLN is the sales of the orders lost or gained"
+   }
+  }
+ },
+ {
+  "id": "c12",
+  "anomaly": "Clothing|email|sales|2023-11-09|2023-11-15",
+  "main_cause": "campaign",
+  "direction": "up",
+  "sheets": {
+   "pl": {
+    "segment": "Odzież · e-mail",
+    "metric": "sprzedaż",
+    "days": "9–15 listopada 2023",
+    "length": "7 dni",
+    "direction": "wzrost",
+    "actual": "564 552 zł",
+    "expected": "342 734 zł",
+    "change": "+221 818 zł",
+    "change_percent": "+65%",
+    "main_cause": "kampania",
+    "causes": [
+     {
+      "cause": "kampania",
+      "amount": "+163 894 zł"
+     },
+     {
+      "cause": "ceny i asortyment",
+      "amount": "+53 889 zł"
+     },
+     {
+      "cause": "popyt",
+      "amount": "+35 872 zł"
+     }
+    ],
+    "evidence": [
+     "linie zamówień: 1 072 zamiast oczekiwanych 676",
+     "sesje: 15 803 zamiast oczekiwanych 10 847",
+     "trwała kampania Email 2023-11-09, Email 2023-11-14"
+    ],
+    "suggested_check": "sprawdzić, czy kampania wyświetla reklamy"
+   },
+   "en": {
+    "segment": "Clothing · email",
+    "metric": "sales",
+    "days": "9–15 November 2023",
+    "length": "7 days",
+    "direction": "rise",
+    "actual": "PLN 564,552",
+    "expected": "PLN 342,734",
+    "change": "+PLN 221,818",
+    "change_percent": "+65%",
+    "main_cause": "a campaign",
+    "causes": [
+     {
+      "cause": "a campaign",
+      "amount": "+PLN 163,894"
+     },
+     {
+      "cause": "prices and product mix",
+      "amount": "+PLN 53,889"
+     },
+     {
+      "cause": "demand",
+      "amount": "+PLN 35,872"
+     }
+    ],
+    "evidence": [
+     "order lines: 1,072 instead of the expected 676",
+     "sessions: 15,803 instead of the expected 10,847",
+     "campaign running: Email 2023-11-09, Email 2023-11-14"
+    ],
+    "suggested_check": "check that the campaign is still serving ads"
+   }
+  }
+ },
+ {
+  "id": "c13",
+  "anomaly": "*|*|conversion|2023-03-19|2023-03-19",
+  "main_cause": "conversion",
+  "direction": "down",
+  "sheets": {
+   "pl": {
+    "segment": "cały sklep",
+    "metric": "konwersja",
+    "days": "19 marca 2023",
+    "length": "1 dzień",
+    "direction": "spadek",
+    "actual": "146 422 zł",
+    "expected": "294 805 zł",
+    "change": "−148 383 zł",
+    "change_percent": "−50%",
+    "main_cause": "konwersja",
+    "causes": [
+     {
+      "cause": "konwersja",
+      "amount": "−148 448 zł"
+     }
+    ],
+    "evidence": [
+     "zamówienia: 204 zamiast oczekiwanych 411",
+     "najwięcej na urządzeniach: telefony"
+    ],
+    "suggested_check": "sprawdzić koszyk i płatności na telefonach",
+    "metric_note": "zmiana w złotych to sprzedaż utraconych albo dodatkowych zamówień"
+   },
+   "en": {
+    "segment": "whole shop",
+    "metric": "conversion",
+    "days": "19 March 2023",
+    "length": "1 day",
+    "direction": "drop",
+    "actual": "PLN 146,422",
+    "expected": "PLN 294,805",
+    "change": "−PLN 148,383",
+    "change_percent": "−50%",
+    "main_cause": "conversion",
+    "causes": [
+     {
+      "cause": "conversion",
+      "amount": "−PLN 148,448"
+     }
+    ],
+    "evidence": [
+     "orders: 204 instead of the expected 411",
+     "mostly on mobile"
+    ],
+    "suggested_check": "check the cart and payments on phones",
+    "metric_note": "the change in PLN is the sales of the orders lost or gained"
+   }
+  }
+ },
+ {
+  "id": "c14",
+  "anomaly": "*|*|margin|2023-04-28|2023-04-28",
+  "main_cause": "outage",
+  "direction": "down",
+  "sheets": {
+   "pl": {
+    "segment": "cały sklep",
+    "metric": "marża",
+    "days": "28 kwietnia 2023",
+    "length": "1 dzień",
+    "direction": "spadek",
+    "actual": "4 929 zł",
+    "expected": "102 558 zł",
+    "change": "−97 629 zł",
+    "change_percent": "−95%",
+    "main_cause": "awaria sklepu",
+    "causes": [
+     {
+      "cause": "awaria sklepu",
+      "amount": "−97 245 zł"
+     },
+     {
+      "cause": "ceny i asortyment",
+      "amount": "−2 211 zł"
+     }
+    ],
+    "evidence": [
+     "linie zamówień: 36 zamiast oczekiwanych 584",
+     "sesje: 279 zamiast oczekiwanych 4 365"
+    ],
+    "suggested_check": "sprawdzić dostępność sklepu i logi"
+   },
+   "en": {
+    "segment": "whole shop",
+    "metric": "margin",
+    "days": "28 April 2023",
+    "length": "1 day",
+    "direction": "drop",
+    "actual": "PLN 4,929",
+    "expected": "PLN 102,558",
+    "change": "−PLN 97,629",
+    "change_percent": "−95%",
+    "main_cause": "a shop outage",
+    "causes": [
+     {
+      "cause": "a shop outage",
+      "amount": "−PLN 97,245"
+     },
+     {
+      "cause": "prices and product mix",
+      "amount": "−PLN 2,211"
+     }
+    ],
+    "evidence": [
+     "order lines: 36 instead of the expected 584",
+     "sessions: 279 instead of the expected 4,365"
+    ],
+    "suggested_check": "check the shop's uptime and logs"
+   }
+  }
+ },
+ {
+  "id": "c15",
+  "anomaly": "Office|affiliate|margin|2024-04-03|2024-04-03",
+  "main_cause": "discount",
+  "direction": "down",
+  "sheets": {
+   "pl": {
+    "segment": "Biuro · afiliacja",
+    "metric": "marża",
+    "days": "3 kwietnia 2024",
+    "length": "1 dzień",
+    "direction": "spadek",
+    "actual": "412 zł",
+    "expected": "1 650 zł",
+    "change": "−1 238 zł",
+    "change_percent": "−75%",
+    "main_cause": "rabaty",
+    "causes": [
+     {
+      "cause": "rabaty",
+      "amount": "−1 100 zł"
+     },
+     {
+      "cause": "ceny i asortyment",
+      "amount": "−138 zł"
+     }
+    ],
+    "evidence": [
+     "linie zamówień: 4 zamiast oczekiwanych 5",
+     "średni rabat 41% zamiast 6%"
+    ],
+    "suggested_check": "sprawdzić ustawienia rabatów i kody promocyjne"
+   },
+   "en": {
+    "segment": "Office · affiliate",
+    "metric": "margin",
+    "days": "3 April 2024",
+    "length": "1 day",
+    "direction": "drop",
+    "actual": "PLN 412",
+    "expected": "PLN 1,650",
+    "change": "−PLN 1,238",
+    "change_percent": "−75%",
+    "main_cause": "discounts",
+    "causes": [
+     {
+      "cause": "discounts",
+      "amount": "−PLN 1,100"
+     },
+     {
+      "cause": "prices and product mix",
+      "amount": "−PLN 138"
+     }
+    ],
+    "evidence": [
+     "order lines: 4 instead of the expected 5",
+     "average discount 41% instead of 6%"
+    ],
+    "suggested_check": "check discount settings and voucher codes"
+   }
+  }
+ },
+ {
+  "id": "c16",
+  "anomaly": "*|*|sales|2024-08-30|2024-08-30",
+  "main_cause": "outage",
+  "direction": "down",
+  "sheets": {
+   "pl": {
+    "segment": "cały sklep",
+    "metric": "sprzedaż",
+    "days": "30 sierpnia 2024",
+    "length": "1 dzień",
+    "direction": "spadek",
+    "actual": "31 250 zł",
+    "expected": "512 980 zł",
+    "change": "−481 730 zł",
+    "change_percent": "−94%",
+    "main_cause": "awaria sklepu",
+    "causes": [
+     {
+      "cause": "awaria sklepu",
+      "amount": "−479 300 zł"
+     },
+     {
+      "cause": "ceny i asortyment",
+      "amount": "−2 430 zł"
+     }
+    ],
+    "evidence": [
+     "linie zamówień: 61 zamiast oczekiwanych 790",
+     "sesje: 380 zamiast oczekiwanych 4 710"
+    ],
+    "suggested_check": "sprawdzić dostępność sklepu i logi"
+   },
+   "en": {
+    "segment": "whole shop",
+    "metric": "sales",
+    "days": "30 August 2024",
+    "length": "1 day",
+    "direction": "drop",
+    "actual": "PLN 31,250",
+    "expected": "PLN 512,980",
+    "change": "−PLN 481,730",
+    "change_percent": "−94%",
+    "main_cause": "a shop outage",
+    "causes": [
+     {
+      "cause": "a shop outage",
+      "amount": "−PLN 479,300"
+     },
+     {
+      "cause": "prices and product mix",
+      "amount": "−PLN 2,430"
+     }
+    ],
+    "evidence": [
+     "order lines: 61 instead of the expected 790",
+     "sessions: 380 instead of the expected 4,710"
+    ],
+    "suggested_check": "check the shop's uptime and logs"
+   }
+  }
+ },
+ {
+  "id": "c17",
+  "anomaly": "Clothing|*|returns|2023-07-15|2023-07-28",
+  "main_cause": "returns",
+  "direction": "up",
+  "sheets": {
+   "pl": {
+    "segment": "Odzież",
+    "metric": "koszt zwrotów",
+    "days": "15–28 lipca 2023",
+    "length": "14 dni",
+    "direction": "wzrost",
+    "actual": "98 120 zł",
+    "expected": "41 200 zł",
+    "change": "+56 920 zł",
+    "change_percent": "+138%",
+    "main_cause": "zwroty",
+    "causes": [
+     {
+      "cause": "zwroty",
+      "amount": "+56 920 zł"
+     }
+    ],
+    "evidence": [
+     "zwroty: 1 210 zamiast oczekiwanych 520",
+     "najczęstszy powód: wadliwy"
+    ],
+    "suggested_check": "sprawdzić partię produktu z największą liczbą zwrotów"
+   },
+   "en": {
+    "segment": "Clothing",
+    "metric": "cost of returns",
+    "days": "15–28 July 2023",
+    "length": "14 days",
+    "direction": "rise",
+    "actual": "PLN 98,120",
+    "expected": "PLN 41,200",
+    "change": "+PLN 56,920",
+    "change_percent": "+138%",
+    "main_cause": "returns",
+    "causes": [
+     {
+      "cause": "returns",
+      "amount": "+PLN 56,920"
+     }
+    ],
+    "evidence": [
+     "returns: 1,210 instead of the expected 520",
+     "most common reason: defective"
+    ],
+    "suggested_check": "check the batch of the most returned product"
+   }
+  }
+ },
+ {
+  "id": "c18",
+  "anomaly": "*|social|margin|2024-02-01|2024-02-05",
+  "main_cause": "campaign",
+  "direction": "down",
+  "sheets": {
+   "pl": {
+    "segment": "kanał media społecznościowe",
+    "metric": "marża",
+    "days": "1–5 lutego 2024",
+    "length": "5 dni",
+    "direction": "spadek",
+    "actual": "15 020 zł",
+    "expected": "23 880 zł",
+    "change": "−8 860 zł",
+    "change_percent": "−37%",
+    "main_cause": "kampania",
+    "causes": [
+     {
+      "cause": "kampania",
+      "amount": "−3 100 zł"
+     },
+     {
+      "cause": "rabaty",
+      "amount": "−2 900 zł"
+     },
+     {
+      "cause": "ceny i asortyment",
+      "amount": "−2 860 zł"
+     }
+    ],
+    "evidence": [
+     "linie zamówień: 410 zamiast oczekiwanych 530",
+     "sesje: 9 100 zamiast oczekiwanych 12 800",
+     "trwała kampania Social 2024-01-31"
+    ],
+    "suggested_check": "sprawdzić, czy kampania wyświetla reklamy"
+   },
+   "en": {
+    "segment": "social media channel",
+    "metric": "margin",
+    "days": "1–5 February 2024",
+    "length": "5 days",
+    "direction": "drop",
+    "actual": "PLN 15,020",
+    "expected": "PLN 23,880",
+    "change": "−PLN 8,860",
+    "change_percent": "−37%",
+    "main_cause": "a campaign",
+    "causes": [
+     {
+      "cause": "a campaign",
+      "amount": "−PLN 3,100"
+     },
+     {
+      "cause": "discounts",
+      "amount": "−PLN 2,900"
+     },
+     {
+      "cause": "prices and product mix",
+      "amount": "−PLN 2,860"
+     }
+    ],
+    "evidence": [
+     "order lines: 410 instead of the expected 530",
+     "sessions: 9,100 instead of the expected 12,800",
+     "campaign running: Social 2024-01-31"
+    ],
+    "suggested_check": "check that the campaign is still serving ads"
+   }
+  }
+ },
+ {
+  "id": "c19",
+  "anomaly": "Electronics|direct|sales|2023-05-10|2023-05-12",
+  "main_cause": "single_account",
+  "direction": "up",
+  "sheets": {
+   "pl": {
+    "segment": "Elektronika · wejścia bezpośrednie",
+    "metric": "sprzedaż",
+    "days": "10–12 maja 2023",
+    "length": "3 dni",
+    "direction": "wzrost",
+    "actual": "94 500 zł",
+    "expected": "41 000 zł",
+    "change": "+53 500 zł",
+    "change_percent": "+130%",
+    "main_cause": "zamówienia jednego konta",
+    "causes": [
+     {
+      "cause": "zamówienia jednego konta",
+      "amount": "+47 800 zł"
+     },
+     {
+      "cause": "ceny i asortyment",
+      "amount": "+5 700 zł"
+     }
+    ],
+    "evidence": [
+     "linie zamówień: 61 zamiast oczekiwanych 58",
+     "jedno konto klienta: 47 800 zł w kilku zamówieniach"
+    ],
+    "suggested_check": "zweryfikować zamówienia tego konta przed wysyłką"
+   },
+   "en": {
+    "segment": "Electronics · direct",
+    "metric": "sales",
+    "days": "10–12 May 2023",
+    "length": "3 days",
+    "direction": "rise",
+    "actual": "PLN 94,500",
+    "expected": "PLN 41,000",
+    "change": "+PLN 53,500",
+    "change_percent": "+130%",
+    "main_cause": "orders of one account",
+    "causes": [
+     {
+      "cause": "orders of one account",
+      "amount": "+PLN 47,800"
+     },
+     {
+      "cause": "prices and product mix",
+      "amount": "+PLN 5,700"
+     }
+    ],
+    "evidence": [
+     "order lines: 61 instead of the expected 58",
+     "one customer account: PLN 47,800 in several orders"
+    ],
+    "suggested_check": "verify this account's orders before shipping"
+   }
+  }
+ }
+]

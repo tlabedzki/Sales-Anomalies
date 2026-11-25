@@ -32,11 +32,12 @@ zmianą co do grosza, a główna przyczyna jest trafna w 15 z 15 prawdziwych ano
 **Stack:** Python · pandas · NumPy · DuckDB · Plotly · Dash · Claude API · pytest
 
 <!-- generated:summary -->
-- **Trafione:** płatność nie działa na telefonach (wszystkie); obie awarie sklepu z `anomaly_data` (2 z 2). Każde z 27
-  rozbić sumuje się do zmiany co do grosza.
+- **Trafione:** płatność nie działa na telefonach (wszystkie przypadki); w większości: fala zwrotów wadliwej partii (3 z
+  4), wyższa prowizja afiliacyjna (2 z 3); obie awarie sklepu z `anomaly_data` (2 z 2). Każde z 27 rozbić sumuje się do
+  zmiany co do grosza.
 - **Chybione:** spada ruch z wyszukiwarki, konkurent tnie ceny, kampania przestaje działać, dodatkowy rabat w kategorii
-  i kanale, zbyt niska cena hitów (0 trafień): zmiany do 291% swojego segmentu giną w dziennym szumie. Z 267 oszustw z
-  `anomaly_data` wykrywanie znalazło 0.
+  i kanale, zbyt niska cena hitów (0 trafień): ich zmiany mają medianę 2,9 odchylenia dziennego szumu i giną w nim. Z
+  267 oszustw z `anomaly_data` wykrywanie znalazło 0.
 <!-- /generated:summary -->
 
 ## 1. Sklep Lumo i pytania kierownika
@@ -109,7 +110,8 @@ samego dnia. Próg to decyzja biznesowa: niższy znalazłby więcej, ale zabrał
 **Pytanie.** Które rodzaje problemów kontrola widzi od razu, a które przechodzą niezauważone?
 
 **Co robi analiza.** Każde wstrzyknięte zdarzenie i każde zdarzenie generatora dostaje ocenę: znalezione albo nie.
-Wielkość scenariusza to zmiana jego głównej metryki w jego segmencie i dniach wobec poziomu bez wstrzyknięcia.
+Siła sygnału scenariusza to jego prawdziwa zmiana w złotych (albo w zamówieniach) podzielona przez szum, jakiego model
+spodziewa się w tym segmencie i tych dniach; mówi, ile odchyleń standardowych dzieli zmianę od zwykłego dnia.
 
 **Jak to sprawdzamy.** Zdarzenie jest znalezione, gdy co najmniej jedna anomalia dotyczy jego dni i segmentu oraz
 wyjaśnia ją w co najmniej 30%.
@@ -119,9 +121,10 @@ wyjaśnia ją w co najmniej 30%.
 <!-- generated:recall -->
 ![W całości wykryte: płatność nie działa na telefonach, awaria sklepu na cały dzień](docs/img/recall.png)
 
-![Przeoczone zmiany sięgały 291% swojego segmentu, najmniejsza wykryta 47%](docs/img/sizes.png)
+![Najsilniejszy przeoczony sygnał miał 4,5 odchylenia szumu, najsłabszy wykryty 6,2](docs/img/sizes.png)
 
-Najmniejszy wykryty scenariusz zmienił swój segment o 47%, największy przeoczony o 291%.
+Wykryte scenariusze mają medianę sygnału 14,0 odchylenia szumu, przeoczone 2,9; najsłabszy wykryty 6,2, najsilniejszy
+przeoczony 4,5.
 <!-- /generated:recall -->
 
 **Co to znaczy dla kierownika.** Kontrola dzienna łapie awarie i duże przecieki. Dzienna sprzedaż Lumo odbiega
@@ -368,7 +371,7 @@ pip install -r requirements-dev.txt
 python -m pytest
 ```
 
-45 testów sprawdza na małym sklepie syntetycznym (bez plików danych i bez sieci, ok. 20 s): ekonomię linii, prognozę
+43 testy sprawdzają na małym sklepie syntetycznym (bez plików danych i bez sieci, ok. 15 s): ekonomię linii, prognozę
 tylko z przeszłości, wstrzykiwanie scenariuszy, wykrywanie, sumę części co do grosza, kontrolę liczb w notatkach
 i widoki aplikacji.
 

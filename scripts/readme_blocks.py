@@ -30,6 +30,15 @@ def _n(value: float, lang: str, decimals: int = 0) -> str:
     return i18n.number(value, lang, decimals)
 
 
+def plural_pl(count: int, one: str, few: str, many: str) -> str:
+    """Polish noun after a number: 1 alarm, 2-4 alarmy, 5+ alarmów (12-14 take many)."""
+    if count == 1:
+        return one
+    if count % 10 in (2, 3, 4) and count % 100 not in (12, 13, 14):
+        return few
+    return many
+
+
 def _verdict_rows(n: dict, lang: str) -> list[str]:
     rows = n["recall"]
     out = []
@@ -58,6 +67,9 @@ def blocks(n: dict) -> dict[str, str]:
     scen = recall[recall["source"] == "scenario"]
     full = scen[scen["found"] == scen["events"]]
     none = scen[scen["found"] == 0]
+    most = scen[(scen["found"] * 2 > scen["events"]) & (scen["found"] < scen["events"])]
+    most_pl = "w większości: " + ", ".join(f"{r.label.lower()} ({r.found} z {r.events})" for r in most.itertuples())
+    most_en = "most of: " + ", ".join(f"{r.label.lower()} ({r.found} of {r.events})" for r in most.itertuples())
     control = s.get("control", {})
     neg = s["negative_period"]
     cost = totals.get("cost_usd", 0.0)
@@ -78,8 +90,8 @@ def blocks(n: dict) -> dict[str, str]:
                   f"grosza, a główna przyczyna jest trafna w {s['main_cause_right']} z {s['main_cause_graded']} "
                   f"prawdziwych anomalii.")
         summary = (
-            f"- **Trafione:** {', '.join(x.lower() for x in full['label'])} "
-            f"({'wszystkie' if len(full) else ''}); obie awarie sklepu z `anomaly_data`"
+            f"- **Trafione:** {', '.join(x.lower() for x in full['label'])} (wszystkie przypadki); "
+            f"{most_pl}; obie awarie sklepu z `anomaly_data`"
             f"{'' if outages is None else f' ({outages.found} z {outages.events})'}. Każde z "
             f"{s['breakdowns']} rozbić sumuje się do zmiany co do grosza.\n"
             f"- **Chybione:** {', '.join(x.lower() for x in none['label'])} (0 trafień): ich zmiany mają "
@@ -110,7 +122,9 @@ def blocks(n: dict) -> dict[str, str]:
                            f"{evals['passed']} z {evals['runs']} przebiegów przeszło wszystkie testy; zmyślonych liczb "
                            f"{evals['invented']}, koszt {_n(evals['cost_usd'], lang, 4)} USD.")
         verdicts = (f"Wykrywanie zgłosiło {s['anomalies']} anomalii, z czego {s['false_alarms']} to fałszywe alarmy. "
-                    f"Kontrole: okres bez wstrzyknięć {neg['false']} fałszywe alarmy, sklep bez scenariuszy "
+                    f"Kontrole: okres bez wstrzyknięć {neg['false']} "
+                    f"{plural_pl(neg['false'], 'fałszywy alarm', 'fałszywe alarmy', 'fałszywych alarmów')}, "
+                    f"sklep bez scenariuszy "
                     f"{_n(control.get('false_per_month', 0), lang, 2)} fałszywego alarmu na miesiąc.\n\n"
                     "| Zdarzenie | Źródło | Znalezione |\n|---|---|---|\n" + "\n".join(_verdict_rows(n, lang)))
     else:
@@ -120,7 +134,8 @@ def blocks(n: dict) -> dict[str, str]:
                   f"{s['scenarios_total']} injected scenarios, every breakdown adds up to the change to the grosz, and "
                   f"the main cause is right in {s['main_cause_right']} of {s['main_cause_graded']} real anomalies.")
         summary = (
-            f"- **What worked:** {', '.join(x.lower() for x in full['label'])} (all found); both shop outages of "
+            f"- **What worked:** {', '.join(x.lower() for x in full['label'])} (all found); {most_en}; both shop "
+            f"outages of "
             f"`anomaly_data`. Each of the {s['breakdowns']} breakdowns adds up to its change to the grosz.\n"
             f"- **What missed:** {', '.join(x.lower() for x in none['label'])} (none found): their changes have "
             f"a median of {_n(missed_median, lang, 1)} deviations of the daily noise and vanish in it. Of the "
