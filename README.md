@@ -102,8 +102,9 @@ Okres bez wstrzyknięć (3 miesiące): 2 fałszywe alarmy. Ten sam sklep bez ża
 fałszywych alarmów (0,54 na miesiąc).
 <!-- /generated:detection -->
 
-**Co to znaczy dla kierownika.** Przy takim progu alarm jest rzadki i zwykle prawdziwy, więc warto go sprawdzić tego
-samego dnia. Próg to decyzja biznesowa: niższy znalazłby więcej, ale zabrałby więcej czasu na fałszywe tropy.
+**Co to znaczy dla kierownika.** Przy takim progu alarm jest rzadki i częściej prawdziwy niż fałszywy, więc warto go
+sprawdzić tego samego dnia. Próg to decyzja biznesowa: niższy znalazłby więcej, ale zabrałby więcej czasu na
+fałszywe tropy.
 
 ## 4. Co wykrywanie łapie, a co gubi?
 
@@ -182,7 +183,7 @@ pierwszej wersji przez kontrolę liczb, a pozostałe mają zdanie z szablonu kod
 nie ma ani jednej liczby spoza arkusza faktów. Wszystkie wywołania kosztowały 0,0000 USD (0 tokenów wejścia, 0 wyjścia).
 <!-- /generated:notes -->
 
-**Co to znaczy dla kierownika.** Czyta zdanie, które brzmi jak od analityka, a każda liczba w nim pochodzi z kodu.
+**Co to znaczy dla kierownika.** Czyta zdanie jak od analityka, a każda liczba w nim pochodzi z kodu.
 
 ## 7. Analiza kontra prawda
 
@@ -213,13 +214,13 @@ bez scenariuszy 0,54 fałszywego alarmu na miesiąc.
   linii rozrzuca się o kilkaset złotych. Lekcja: rabat warto pilnować wprost (średni rabat na linię), nie przez
   marżę.
 - **Kampanie, ruch z wyszukiwarki i konkurencja.** Model wie, kiedy kampania trwa, ale nie zna jej siły, a sprzedaż
-  kanału mocno waha się z dnia na dzień. Spadek o połowę przez trzy dni jest na granicy wykrywalności.
+  kanału mocno waha się z dnia na dzień. Nawet spadek o połowę przez trzy dni nie przebija się przez ten szum.
   Lekcja: ruch i konwersję kanału trzeba śledzić w sesjach, nie tylko w złotych.
 - **Oszustwa z `anomaly_data`.** Przejęte konto składa kilka drogich zamówień w paru komórkach, po jednym czy dwa
   w każdej, a dzienna sprzedaż elektroniki i tak mocno się waha. To anomalia konta, nie segmentu.
   Lekcja: oszustwa łapie się na poziomie klienta (wiele drogich zamówień z jednego konta), nie na sumach sprzedaży.
-- **Fałszywe alarmy.** Większość to skoki w kanale mediów społecznościowych w czasie mocniejszych niż zwykle kampanii
-  i dni wokół Black Friday. To realne zmiany, tylko nie są w kluczu odpowiedzi.
+- **Fałszywe alarmy.** Większość to skoki sprzedaży w kanale mediów społecznościowych w czasie kampanii (model nie zna
+  jej siły) i w listopadowym szczycie: 11.11 i Black Friday. To realne zmiany, tylko nie ma ich w kluczu odpowiedzi.
 
 Pomyłki pokazane wprost to część wyniku. Klucz odpowiedzi umie powiedzieć „przeoczone” i „fałszywy alarm”, więc
 „znalezione” coś znaczy, a granica wykrywalności jest zmierzona, nie zgadnięta.
