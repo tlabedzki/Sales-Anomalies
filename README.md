@@ -374,7 +374,7 @@ pip install -r requirements-dev.txt
 python -m pytest
 ```
 
-47 testów sprawdza na małym sklepie syntetycznym (bez plików danych i bez sieci, ok. 15 s): ekonomię linii, prognozę
+48 testów sprawdza na małym sklepie syntetycznym (bez plików danych i bez sieci, ok. 15 s): ekonomię linii, prognozę
 tylko z przeszłości, wstrzykiwanie scenariuszy, wykrywanie, sumę części co do grosza, kontrolę liczb w notatkach
 i widoki aplikacji.
 
