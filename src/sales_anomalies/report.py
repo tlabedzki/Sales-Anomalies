@@ -80,6 +80,11 @@ def load(directory: Path = OUTPUT_DIR) -> Results:
 # Rows and labels (English: the app)
 
 
+def hurts(metric: str, change: float) -> bool:
+    """A change that costs the shop money: less sales, margin or conversion, more returns or costs."""
+    return change > 0 if metric in ("returns", "costs") else change < 0
+
+
 def change_percent(b: Breakdown) -> float:
     return b.change / b.expected if b.expected else float("nan")
 
@@ -94,6 +99,7 @@ def anomaly_table(r: Results) -> pd.DataFrame:
             "segment": i18n.segment(a.segment, "en"), "metric": i18n.METRICS["en"][b.metric],
             "change": b.change, "change_percent": change_percent(b),
             "cause": i18n.CAUSES["en"][b.main_cause], "verdict": VERDICTS[a.verdict], "start": a.start,
+            "hurts": hurts(b.metric, b.change),
         })
     return pd.DataFrame(rows).sort_values("start", ascending=False).reset_index(drop=True)
 

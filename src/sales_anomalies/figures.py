@@ -89,8 +89,11 @@ def bridge(b: Breakdown, lang: str = "en", height: int | None = None) -> go.Figu
     data = bridge_data(b, lang)
     low = data[["start", "end"]].min(axis=1)
     size = (data["end"] - data["start"]).abs()
-    colors = [t.PRIMARY if kind == "total" else t.ACCENT if cause == b.main_cause else t.MIST
-              for kind, cause in zip(data["kind"], data["cause"], strict=True)]
+    # One copper mark: the largest part of the main cause.
+    main = data[(data["kind"] == "part") & (data["cause"] == b.main_cause)]["amount"].abs()
+    highlight = main.idxmax() if len(main) else None
+    colors = [t.PRIMARY if kind == "total" else t.ACCENT if index == highlight else t.MIST
+              for index, kind in zip(data.index, data["kind"], strict=True)]
     labels = [i18n.money(a, lang) if kind == "total" else i18n.money(a, lang, sign=True)
               for kind, a in zip(data["kind"], data["amount"], strict=True)]
     fig = go.Figure()

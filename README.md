@@ -17,15 +17,26 @@ liczy sam. Wszystko jest oceniane kluczem odpowiedzi: anomaliami wstrzykniętymi
 i zdarzeniami, które oznaczył sam generator danych.
 
 <!-- generated:result -->
-**Wynik.** Wynik pojawi się po pierwszym przebiegu `python scripts/make_charts.py`.
+**Wynik.** W dwóch latach dziennych danych wykrywanie zgłosiło 27 anomalii; 15 z nich to zdarzenia z klucza odpowiedzi
+(56%), przy 0,50 fałszywego alarmu na miesiąc. Znalazło 9 z 31 wstrzykniętych scenariuszy, każdy rozkład zgadza się ze
+zmianą co do grosza, a główna przyczyna jest trafna w 15 z 15 prawdziwych anomalii.
 <!-- /generated:result -->
 
 <!-- generated:hero -->
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/img/app-demo-dark.svg">
+  <img alt="Aplikacja Sales Anomalies w ilustracji: oś czasu z 27 anomaliami z lat 2023–2024; kliknięcie kropki Odzież (15–24 lipca 2023) otwiera notatkę dla kierownika i rozbicie zmiany +157 553 zł na przyczyny, z główną: zwroty (+157 553 zł); potem powrót na oś czasu." src="docs/img/app-demo.svg">
+</picture>
 <!-- /generated:hero -->
 
 **Stack:** Python · pandas · NumPy · DuckDB · Plotly · Dash · Claude API · pytest
 
 <!-- generated:summary -->
+- **Trafione:** płatność nie działa na telefonach (wszystkie); obie awarie sklepu z `anomaly_data` (2 z 2). Każde z 27
+  rozbić sumuje się do zmiany co do grosza.
+- **Chybione:** spada ruch z wyszukiwarki, konkurent tnie ceny, kampania przestaje działać, dodatkowy rabat w kategorii
+  i kanale, zbyt niska cena hitów (0 trafień): zmiany do 291% swojego segmentu giną w dziennym szumie. Z 267 oszustw z
+  `anomaly_data` wykrywanie znalazło 0.
 <!-- /generated:summary -->
 
 ## 1. Sklep Lumo i pytania kierownika
@@ -84,6 +95,10 @@ alarmu). Czułość to odsetek zdarzeń z klucza, które wykrywanie znalazło.
 **Wynik.**
 
 <!-- generated:detection -->
+![27 anomalii w 2023–2024: 15 prawdziwych, 12 fałszywych alarmów](docs/img/timeline.png)
+
+W okresie bez wstrzyknięć (3 miesiące) padło 2 fałszywych alarmów. Ten sam sklep bez żadnego scenariusza dał 16
+anomalii, w tym 13 fałszywych (0,54 na miesiąc).
 <!-- /generated:detection -->
 
 **Co to znaczy dla kierownika.** Przy takim progu alarm jest rzadki i zwykle prawdziwy, więc warto go sprawdzić tego
@@ -102,6 +117,11 @@ wyjaśnia ją w co najmniej 30%.
 **Wynik.**
 
 <!-- generated:recall -->
+![W całości wykryte: płatność nie działa na telefonach, awaria sklepu na cały dzień](docs/img/recall.png)
+
+![Przeoczone zmiany sięgały 291% swojego segmentu, najmniejsza wykryta 47%](docs/img/sizes.png)
+
+Najmniejszy wykryty scenariusz zmienił swój segment o 47%, największy przeoczony o 291%.
 <!-- /generated:recall -->
 
 **Co to znaczy dla kierownika.** Kontrola dzienna łapie awarie i duże przecieki. Dzienna sprzedaż Lumo waha się
@@ -128,6 +148,10 @@ przyczyną zdarzenia z klucza odpowiedzi.
 **Wynik.**
 
 <!-- generated:bridge -->
+![Zwroty: +157 553 zł z +157 553 zł](docs/img/bridge.png)
+
+Notatka do tej anomalii (z szablonu kodu): „15–24 lipca 2023: koszt zwrotów (Odzież) +157 553 zł (+133%) względem
+oczekiwań, głównie przez: zwroty (+157 553 zł); warto sprawdzić partię produktu z największą liczbą zwrotów.”
 <!-- /generated:bridge -->
 
 **Co to znaczy dla kierownika.** Zamiast „marża spadła” dostaje konkretną przyczynę z kwotą i wie, gdzie zacząć:
@@ -150,6 +174,9 @@ arkusza, najwyżej dwa zdania i 50 słów, nazwana główna przyczyna, segment i
 **Wynik.**
 
 <!-- generated:notes -->
+0 z 54 notatek (po polsku i po angielsku) napisał claude-haiku-5-5; 0 przeszło dopiero za drugim razem, po odrzuceniu
+pierwszej wersji przez kontrolę liczb, a pozostałe mają zdanie z szablonu kodu. W notatkach, które trafiły do aplikacji,
+nie ma ani jednej liczby spoza arkusza faktów. Wszystkie wywołania kosztowały 0,0000 USD (0 tokenów wejścia, 0 wyjścia).
 <!-- /generated:notes -->
 
 **Co to znaczy dla kierownika.** Czyta zdanie, które brzmi jak od analityka, a każda liczba w nim pochodzi z kodu.
@@ -157,6 +184,23 @@ arkusza, najwyżej dwa zdania i 50 słów, nazwana główna przyczyna, segment i
 ## 7. Analiza kontra prawda
 
 <!-- generated:verdicts -->
+Wykrywanie zgłosiło 27 anomalii, z czego 12 to fałszywe alarmy. Kontrole: okres bez wstrzyknięć 2 fałszywe alarmy, sklep
+bez scenariuszy 0,54 fałszywego alarmu na miesiąc.
+
+| Zdarzenie | Źródło | Znalezione |
+|---|---|---|
+| Płatność nie działa na telefonach | wstrzyknięte | 3 z 3 |
+| Fala zwrotów wadliwej partii | wstrzyknięte | 3 z 4 |
+| Wyższa prowizja afiliacyjna | wstrzyknięte | 2 z 3 |
+| Przewoźnik podnosi stawkę | wstrzyknięte | 1 z 4 |
+| Spada ruch z wyszukiwarki | wstrzyknięte | 0 z 3 |
+| Konkurent tnie ceny | wstrzyknięte | 0 z 3 |
+| Kampania przestaje działać | wstrzyknięte | 0 z 3 |
+| Dodatkowy rabat w kategorii i kanale | wstrzyknięte | 0 z 4 |
+| Zbyt niska cena hitów | wstrzyknięte | 0 z 4 |
+| Awaria sklepu na cały dzień | oznaczone przez generator | 2 z 2 |
+| Wadliwa partia jednego produktu | oznaczone przez generator | 0 z 1 |
+| Oszustwo (przejęte konto) | oznaczone przez generator | 0 z 267 |
 <!-- /generated:verdicts -->
 
 **Gdzie metody się pomyliły i czego to uczy.**

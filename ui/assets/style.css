@@ -88,6 +88,7 @@ body { color: var(--dg-ink); font-family: var(--dg-sans); -webkit-font-smoothing
 .sa-filter { margin-bottom: 4px; }
 .sa-stats-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 32px; }
 .dg-stat.sa-negative .dg-stat-value { color: var(--dg-copper); }
+.sa-stats-4 .dg-stat-value { font-size: 26px; }
 .sa-stats-4 .dg-stat:last-child .dg-stat-value { font-size: 22px; white-space: normal; line-height: 1.25; }
 .sa-note { margin-top: 20px; max-width: 820px; padding: 20px 24px; background: var(--dg-teal-soft);
            border-left: 3px solid var(--dg-teal); border-radius: 0 6px 6px 0; }

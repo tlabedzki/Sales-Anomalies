@@ -129,7 +129,7 @@ def anomaly_view(r: report.Results, anomaly_id: int) -> list:
     metric_unit = "orders" if b.metric == "conversion" else "PLN"
     stats = html.Div([
         stat("change against expected", money(b.change), i18n.percent(percent, "en") + " of expected",
-             "sa-negative" if b.change < 0 else ""),
+             "sa-negative" if report.hurts(b.metric, b.change) else "sa-positive"),
         stat("expected", i18n.money(b.expected, "en"), "from the model, before the day was seen"),
         stat("actual", i18n.money(b.observed, "en"), "what the shop booked"),
         stat("main cause", i18n.CAUSES["en"][b.main_cause].capitalize(), sheet["suggested_check"]),
@@ -162,7 +162,7 @@ def table_view(r: report.Results) -> html.Div:
                 content = html.Button(value, id={"type": "open-anomaly", "index": int(record["anomaly_id"])},
                                       className="sa-open", title="Open this anomaly")
             elif column == "change":
-                content, css = money(value), f"{css} {'sa-loss' if value < 0 else 'sa-gain'}"
+                content, css = money(value), f"{css} {'sa-loss' if record['hurts'] else 'sa-gain'}"
             elif column == "change_percent":
                 content = i18n.percent(value, "en")
             else:

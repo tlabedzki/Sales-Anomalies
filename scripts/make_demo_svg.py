@@ -58,7 +58,7 @@ FRAMES = {
     "dark": {"bar": "#161b22", "border": "#30363d", "dot": "#484f58", "pill": "#0d1117", "pill_text": "#8b949e"},
 }
 HIDDEN = {"creationflags": subprocess.CREATE_NO_WINDOW} if os.name == "nt" else {}
-PREFERRED = ("checkout_failure", "campaign_stop", "return_wave", "commission_error", "carrier_surcharge")
+PREFERRED = ("return_wave", "campaign_stop", "commission_error", "carrier_surcharge", "checkout_failure")
 
 # Timeline (seconds)
 T = 14.0
@@ -70,7 +70,8 @@ BACK = (9.2, 10.6)
 
 
 def choose(r: report.Results) -> tuple[int, int]:
-    """A: the anomaly the app opens with; B: an injected one with the right cause, of a preferred kind."""
+    """A: the anomaly the app opens with; B: an injected one with the right cause, of another metric than A and of a
+    preferred kind, so the demo shows two different stories."""
     first = report.default_anomaly(r)
     right = set(r.causes.loc[r.causes["right"] & (r.causes["source"] == "scenario"), "anomaly_id"])
     candidates = []
@@ -78,7 +79,8 @@ def choose(r: report.Results) -> tuple[int, int]:
         kinds = r.events_of(anomaly_id)["kind"].tolist()
         rank = min((PREFERRED.index(k) for k in kinds if k in PREFERRED), default=len(PREFERRED))
         model = r.note(anomaly_id, "en")["source"] == "model"
-        candidates.append((rank, not model, -abs(r.breakdowns[anomaly_id].change), anomaly_id))
+        same = r.breakdowns[anomaly_id].metric == r.breakdowns[first].metric
+        candidates.append((same, rank, not model, -abs(r.breakdowns[anomaly_id].change), anomaly_id))
     if not candidates:
         sys.exit("No second anomaly to show: the run has no injected anomaly with the right cause.")
     return first, sorted(candidates)[0][-1]
