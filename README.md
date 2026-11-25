@@ -33,7 +33,7 @@ zmianą co do grosza, a główna przyczyna jest trafna w 15 z 15 prawdziwych ano
 
 <!-- generated:summary -->
 - **Trafione:** płatność nie działa na telefonach (wszystkie przypadki); w większości: fala zwrotów wadliwej partii (3 z
-  4), wyższa prowizja afiliacyjna (2 z 3); obie awarie sklepu z `anomaly_data` (2 z 2). Każde z 27 rozbić sumuje się do
+  4), wyższa prowizja afiliacyjna (2 z 3); awarie sklepu z `anomaly_data` (2 z 2). Każde z 27 rozbić sumuje się do
   zmiany co do grosza.
 - **Chybione:** spada ruch z wyszukiwarki, konkurent tnie ceny, kampania przestaje działać, dodatkowy rabat w kategorii
   i kanale, zbyt niska cena hitów (0 trafień): ich zmiany mają medianę 2,9 odchylenia dziennego szumu i giną w nim. Z
@@ -58,11 +58,11 @@ w ostatnim tygodniu coś odbiegło od normy, w której części sklepu, dlaczego
 Dane są w całości syntetyczne, więc dla każdej zmiany wiadomo, czy naprawdę zaszła i dlaczego. Projekt korzysta
 z dwóch niezależnych kluczy odpowiedzi.
 
-- **Scenariusze wstrzyknięte przez projekt** (`scenarios.py`). Na danych generatora kod dopisuje co dwa tygodnie jedno zdarzenie
-  jednego z dziewięciu rodzajów, np. dodatkowy rabat w jednej kategorii i jednym kanale, falę zwrotów wadliwej partii, wyższą
-  stawkę przewoźnika, konkurenta, który tnie ceny, kampanię, która przestaje działać, albo płatność, która nie działa
-  na telefonach. Każde zdarzenie zmienia tabele tak, jak zrobiłoby to prawdziwe: niższa cena obniża też płatność,
-  prowizję i późniejszy zwrot, a utracone zamówienie zabiera ze sobą przesyłkę i płatność. Wpływ w złotych to
+- **Scenariusze wstrzyknięte przez projekt** (`scenarios.py`). Na danych generatora kod dopisuje co dwa tygodnie jedno
+  zdarzenie jednego z dziewięciu rodzajów, np. dodatkowy rabat w jednej kategorii i jednym kanale, falę zwrotów wadliwej
+  partii, wyższą stawkę przewoźnika, konkurenta, który tnie ceny, kampanię, która przestaje działać, albo płatność,
+  która nie działa na telefonach. Każde zdarzenie zmienia tabele tak, jak zrobiłoby to prawdziwe: niższa cena obniża też
+  płatność, prowizję i późniejszy zwrot, a utracone zamówienie zabiera ze sobą przesyłkę i płatność. Wpływ w złotych to
   różnica danych po wstrzyknięciu i przed nim, więc jest dokładny.
 - **Zdarzenia oznaczone przez generator** (tabela `anomaly_data`): oszustwa (przejęte konto składa w 2–3 dni kilka
   drogich zamówień), całodniowe awarie sklepu i fala zwrotów jednego produktu.
@@ -83,12 +83,12 @@ spodziewać?
 
 **Co robi analiza.** Dla każdego ze 112 segmentów (cały sklep, 6 kanałów, 15 kategorii i 90 par kategoria × kanał)
 model prognozuje każdy dzień tylko z dwóch lat przed nim. To regresja Poissona (model dla liczb zdarzeń i kwot) z dniem
-tygodnia, miesiącem, trendem, dniami specjalnymi sklepu i kalendarzem kampanii, przeliczana co miesiąc, jak
-w algorytmie Farringtona do nadzoru nad zachorowaniami. Do tego dochodzi poprawka o poziom z ostatnich tygodni, bo
-ceny i asortyment powoli się zmieniają. Odchylenie mierzy z-score (o ile odchyleń standardowych dzień jest od
-prognozy) na jeden dzień i na 7 dni. Alarm wymaga z-score ponad progiem swojej grupy i zmiany ponad próg istotności
-w złotych. Jedno drogie zamówienie nie jest anomalią: do testu skoku liczy się jako typowe, a do testu spadku pojedyncze linie są
-przycinane do 99. percentyla ich kategorii.
+tygodnia, miesiącem, trendem, dniami specjalnymi sklepu i kalendarzem kampanii, przeliczana co miesiąc, jak w algorytmie
+Farringtona do nadzoru nad zachorowaniami. Do tego dochodzi poprawka o poziom z ostatnich tygodni, bo ceny i asortyment
+powoli się zmieniają. Odchylenie mierzy z-score (o ile odchyleń standardowych dzień jest od prognozy) na jeden dzień i
+na 7 dni. Alarm wymaga z-score ponad progiem swojej grupy i zmiany ponad próg istotności w złotych. Jedno drogie
+zamówienie nie jest anomalią: do testu skoku liczy się jako typowe, a do testu spadku pojedyncze linie są przycinane
+do 99. percentyla ich kategorii.
 
 **Jak to sprawdzamy.** Precyzja to odsetek alarmów, które wyjaśnia klucz odpowiedzi (1 = żadnego fałszywego
 alarmu). Czułość to odsetek zdarzeń z klucza, które wykrywanie znalazło.
@@ -98,8 +98,8 @@ alarmu). Czułość to odsetek zdarzeń z klucza, które wykrywanie znalazło.
 <!-- generated:detection -->
 ![27 anomalii w 2023–2024: 15 prawdziwych, 12 fałszywych alarmów](docs/img/timeline.png)
 
-W okresie bez wstrzyknięć (3 miesiące) padło 2 fałszywych alarmów. Ten sam sklep bez żadnego scenariusza dał 16
-anomalii, w tym 13 fałszywych (0,54 na miesiąc).
+Okres bez wstrzyknięć (3 miesiące): 2 fałszywe alarmy. Ten sam sklep bez żadnego scenariusza: 16 anomalii, w tym 13
+fałszywych alarmów (0,54 na miesiąc).
 <!-- /generated:detection -->
 
 **Co to znaczy dla kierownika.** Przy takim progu alarm jest rzadki i zwykle prawdziwy, więc warto go sprawdzić tego
@@ -280,8 +280,9 @@ adresem http://127.0.0.1:8050; zatrzymasz ją przez Ctrl+C.
 ### Model językowy
 
 Notatki są zapisane w repozytorium, więc klucz nie jest potrzebny. Żeby napisać brakujące notatki na żywo, wpisz
-`ANTHROPIC_API_KEY=...` do pliku `.env` w katalogu projektu i uruchom `python main.py --live`. Evale:
-`python -m evals.run` (jeden przebieg) albo `python -m evals.run --repeat 3`.
+`ANTHROPIC_API_KEY=...` do pliku `.env` w katalogu projektu i uruchom `python main.py --live`. Progi alarmów są w
+repozytorium; `python scripts/calibrate.py` dobiera je od nowa na sklepie z ziarnem 7. Evale: `python -m evals.run`
+(jeden przebieg) albo `python -m evals.run --repeat 3`.
 
 ## Dane
 
@@ -345,6 +346,7 @@ oraz `scenario_truth` tego projektu (`output/events.csv`). Kwoty są netto, bez 
 ```
 main.py                        kontrola dwóch lat, ocena kluczem, zapis do output/
 scripts/get_data.py            Data-Generator v1.7.1 -> data/raw/seed-42, seed-7
+scripts/calibrate.py           progi alarmów z seed 7 -> src/sales_anomalies/thresholds.json
 scripts/make_charts.py         wykresy README i bloki generated (readme_blocks.py)
 scripts/make_demo_svg.py       animowany hero z zrzutów aplikacji
 src/sales_anomalies/
