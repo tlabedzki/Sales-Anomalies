@@ -14,6 +14,7 @@ lines times the cell's share, which depends on trend and the channel's campaigns
 """
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass
 
 import numpy as np
@@ -90,11 +91,21 @@ def fit_binomial(successes: np.ndarray, trials: np.ndarray, x: np.ndarray, itera
     return beta
 
 
-def dispersion(observed: np.ndarray, expected: np.ndarray, variance: np.ndarray, parameters: int) -> float:
-    """Pearson dispersion, at least 1 (counts never vary less than the model allows)."""
+TRIM = 0.0  # share of the largest residuals left out of the band; 1% was tried: no more found, more false alarms
+
+
+def dispersion(observed: np.ndarray, expected: np.ndarray, variance: np.ndarray, parameters: int,
+               trim: float = TRIM) -> float:
+    """
+    Pearson dispersion, at least 1 (counts never vary less than the model allows), optionally without the `trim`
+    share of days with the largest residuals (an outage in the training years widens the band a little; leaving
+    such days out was tried and only moved the thresholds up by the same amount).
+    """
     keep = variance > 0
-    statistic = np.sum((observed[keep] - expected[keep]) ** 2 / variance[keep])
-    return max(1.0, statistic / max(keep.sum() - parameters, 1))
+    squared = (observed[keep] - expected[keep]) ** 2 / variance[keep]
+    if trim and len(squared) > 100:
+        squared = np.sort(squared)[: int(np.ceil(len(squared) * (1 - trim)))]
+    return max(1.0, float(squared.sum()) / max(len(squared) - parameters, 1))
 
 
 def robust_sd(values: np.ndarray) -> float:
@@ -147,7 +158,8 @@ def level_correction(observed: np.ndarray, fitted: np.ndarray, day_index: np.nda
     valid &= expected > 0
     ratio = np.log(np.clip(np.where(valid, actual / np.where(valid, expected, 1.0), 1.0), 0.2, 5.0))
     count = valid.sum(axis=1)
-    with np.errstate(all="ignore"):
+    with np.errstate(all="ignore"), warnings.catch_warnings():
+        warnings.simplefilter("ignore", RuntimeWarning)  # days without four full weeks behind them: no level
         log_ratio = np.nanmedian(np.where(valid, ratio, np.nan), axis=1)
         size = np.nanmean(np.where(valid, expected, np.nan), axis=1)
     noise = (np.pi / 2) * phi / np.maximum(np.nan_to_num(size), 1e-9) / np.maximum(count, 1)
@@ -187,14 +199,19 @@ def online_poisson(y: pd.Series, x: np.ndarray, first: pd.Timestamp, offset: np.
         if keep.sum() > x.shape[1] and keep.mean() > 0.9:
             beta = fit_poisson(yt[keep], xt[keep], ot[keep])
             mu = np.exp(np.clip(xt @ beta + ot, -20, 20))
-        # The spread counts every training day: sparse series (returns of a small category) swing on a few
-        # expensive days, and cutting them would shrink the band and flood the shop with alerts. An outage in the
-        # history widens the band a little, which errs on the side of fewer false alarms.
+        # The spread counts nearly every training day (see TRIM): sparse series (returns of a small category)
+        # swing on a few expensive days, and an outlier cut by their own small scale would shrink the band and
+        # flood the shop with alerts.
         phi = dispersion(values[train], mu, mu, x.shape[1])
         # The recent level uses the actual exposure of past days (never the day judged, see LEVEL_GAP).
         fitted_all = np.exp(np.clip(x @ beta + offset, -20, 20))
         test_index = np.flatnonzero(test)
         recent = level_correction(values, fitted_all, test_index, phi) if level else 1.0
+        if level:
+            # The band is measured the way the forecast is made: on the training days corrected by their own
+            # recent level, so the drift the correction removes does not widen the band as well.
+            mu = mu * level_correction(values, fitted_all, np.flatnonzero(train), phi)
+            phi = dispersion(values[train], mu, mu, x.shape[1])
         expected[test] = np.exp(np.clip(x[test] @ beta + future[test], -20, 20)) * recent
         spread[test] = phi
         inflation[test] = weekly_inflation((values[train] - mu) / np.sqrt(np.maximum(phi * mu, 1e-9)))
