@@ -119,8 +119,8 @@ def truth_line(r: Results, anomaly_id: int) -> str:
     verdict = "named right" if found == first["cause"] else f"named {i18n.CAUSES['en'][found]}, truth is " \
                                                              f"{i18n.CAUSES['en'][first['cause']]}"
     more = f" (+{len(events) - 1} more)" if len(events) > 1 else ""
-    source = "Injected" if first["source"] == "scenario" else "Labelled by Data-Generator"
-    return f"Answer key: {source.lower()}: {what}{more}. Main cause {verdict}."
+    source = "injected" if first["source"] == "scenario" else "labelled by Data-Generator"
+    return f"Answer key: {what} ({source}){more}. Main cause {verdict}."
 
 
 def recall_rows(r: Results) -> pd.DataFrame:

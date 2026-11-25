@@ -3,7 +3,7 @@
 All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [1.0.0] - 2026-11-25
 
 ### Added
 
@@ -15,3 +15,6 @@ All notable changes to this project are documented here. The format follows
 - A one-sentence note for the manager on every anomaly, built from the computed facts, every number checked by
   code.
 - Dash + Mantine app in the portfolio look: anomaly timeline, cause bridge, note and answer key.
+- README as a case study in English, with an animated hero of the app (light and dark) and four charts.
+
+[1.0.0]: https://github.com/tlabedzki/Sales-Anomalies/releases/tag/v1.0.0

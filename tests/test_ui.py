@@ -70,8 +70,9 @@ def results(tmp_path, monkeypatch):
 
 def test_results_load_and_the_answer_key_reads_right(results):
     assert report.default_anomaly(results) == 1
-    assert report.truth_line(results, 1).startswith("Answer key: injected")
-    assert "named right" in report.truth_line(results, 1)
+    line = report.truth_line(results, 1)
+    assert line == "Answer key: campaign Social 2024-01-31 stops (injected). Main cause named right."
+    assert line.count(":") == 1
     table = report.anomaly_table(results)
     assert table.loc[0, "cause"] == "a campaign" and table.loc[0, "verdict"] == "injected"
 
