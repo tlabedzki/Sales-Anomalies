@@ -35,6 +35,10 @@ SCENARIO_SEED = 2026
 NEGATIVE_PERIOD = (pd.Timestamp("2024-03-01"), pd.Timestamp("2024-05-31"))
 PERIOD = (pd.Timestamp("2023-01-08"), pd.Timestamp("2024-12-31"))
 SLOT_DAYS = 14
+# The column whose relative change says how big a scenario is (its own segment and days).
+PRIMARY = {"discount": "margin_sold", "price_error": "margin_sold", "return_wave": "return_cost",
+           "carrier_surcharge": "costs", "competitor_undercut": "sales", "campaign_stop": "sales",
+           "checkout_failure": "orders", "seo_drop": "sales", "commission_error": "costs"}
 KINDS = ("discount", "price_error", "return_wave", "carrier_surcharge", "competitor_undercut", "campaign_stop",
          "checkout_failure", "seo_drop", "commission_error")
 CAUSE = {"discount": "discount", "price_error": "prices", "return_wave": "returns", "carrier_surcharge": "shipping",
@@ -389,9 +393,14 @@ def truth(scenarios: list[Scenario], before: ShopFacts, after: ShopFacts) -> lis
             impact["orders"] = float(changed["orders"] - original["orders"])
             impact["sessions"] = float(changed["sessions"] - original["sessions"])
         base = {name: float(original[name]) for name in names}
+        if s.segment.level in ("shop", "channel"):
+            base["orders"] = float(original["orders"])
+        column = PRIMARY[s.kind]
+        relative = impact[column] / base[column] if base.get(column) else float("nan")
         events.append(TruthEvent(s.scenario_id, "scenario", s.kind, CAUSE[s.kind], start, end, _cells(s, after),
                                  METRICS[s.kind], impact["margin"], s.describe(),  # margin after returns
-                                 {"impact": impact, "base": base, "scenario": as_record(s)}))
+                                 {"impact": impact, "base": base, "scenario": as_record(s), "primary": column,
+                                  "relative": relative}))
     return events
 
 

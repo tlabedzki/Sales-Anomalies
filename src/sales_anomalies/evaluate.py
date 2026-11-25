@@ -128,7 +128,8 @@ def grade(anomalies: list[Anomaly], events: list[TruthEvent], start: pd.Timestam
                      "verdict": verdict, "events": ",".join(e.event_id for e in hits)})
     event_rows = [{"event_id": e.event_id, "source": e.source, "kind": e.kind, "cause": e.cause, "start": e.start,
                    "end": e.end, "segments": ",".join(e.segments), "metrics": ",".join(e.metrics),
-                   "impact": e.impact, "description": e.description, "found": bool(found[e.event_id]),
+                   "impact": e.impact, "relative_change": e.details.get("relative", float("nan")),
+                   "description": e.description, "found": bool(found[e.event_id]),
                    "anomalies": ",".join(str(i) for i in found[e.event_id])} for e in events]
     months = (end - start).days / 30.44
     return Grades(pd.DataFrame(rows), pd.DataFrame(event_rows), months)
