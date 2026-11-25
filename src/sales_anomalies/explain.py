@@ -48,7 +48,8 @@ Rules:
 - Use only numbers that appear in the sheet and copy each exactly as written, with its sign and unit.
 - Do not round, add up, subtract or convert numbers, and do not work out new percentages or totals.
 - Do not add causes, guesses or advice that are not in the sheet.
-- Name the part of the shop, the metric and the causes as the sheet does.
+- Name the part of the shop, the metric and the causes as the sheet does. When "same_as_metric" is true, the main
+  cause is the metric itself: name the main part ("main_part") with its amount instead of repeating the metric.
 - No greeting, no list, no quotation marks.{language_rules}
 
 Return JSON with one field, "text"."""
@@ -139,6 +140,7 @@ def facts(b: Breakdown, lang: str) -> dict:
     causes = sorted(((c, g) for c, g in by_cause.items() if sign * g > 0), key=lambda item: -abs(item[1]))[:TOP_PARTS]
     sheet = {
         "segment": i18n.segment(b.segment, lang),
+        "main_part": main_part(b, lang),
         "metric": i18n.METRICS[lang][b.metric],
         "days": i18n.period(start, end, lang),
         "length": i18n.days((end - start).days + 1, lang),
@@ -153,10 +155,41 @@ def facts(b: Breakdown, lang: str) -> dict:
         "evidence": _evidence(b, lang),
         "suggested_check": i18n.SUGGESTIONS[lang][b.main_cause],
     }
+    if SAME_AS_METRIC.get(b.metric) == b.main_cause:
+        sheet["same_as_metric"] = True
     if b.metric == "conversion":
         sheet["metric_note"] = ("zmiana w złotych to sprzedaż utraconych albo dodatkowych zamówień" if lang == "pl"
                                 else "the change in PLN is the sales of the orders lost or gained")
     return sheet
+
+
+def part_phrase(name: str, lang: str) -> str:
+    """A part of a cause in words that fit a sentence ("orders on mobile", "returns marked defective")."""
+    pl = lang == "pl"
+    if name.startswith("conversion_"):
+        device = name.removeprefix("conversion_")
+        return f"zamówienia z urządzeń: {i18n.DEVICES_PL.get(device, device)}" if pl else f"orders on {device}"
+    if name == "returns_cost_each":
+        return "wyższy koszt jednego zwrotu" if pl else "a higher cost per return"
+    if name.startswith("returns_"):
+        reason = name.removeprefix("returns_")
+        return (f"zwroty z powodu: {i18n.REASONS_PL.get(reason, reason)}" if pl
+                else f"returns marked {reason.replace('_', ' ')}")
+    from sales_anomalies.figures import part_label
+
+    return part_label(name, lang).lower()
+
+
+def main_part(b: Breakdown, lang: str) -> dict:
+    """The largest part of the main cause, in words and PLN."""
+    parts = [p for p in b.parts if p.cause == b.main_cause] or list(b.parts)
+    part = max(parts, key=lambda p: abs(p.grosz))
+    return {"part": part_phrase(part.name, lang), "amount": i18n.money(part.grosz / 100, lang, sign=True)}
+
+
+# Metrics whose main cause has the same name: the note names the largest part instead of "conversion, mainly from
+# conversion".
+SAME_AS_METRIC = {"conversion": "conversion", "returns": "returns"}
 
 
 def facts_hash(sheet: dict) -> str:
@@ -235,12 +268,14 @@ def check(text: str, sheet: dict, lang: str) -> dict:
 def template(sheet: dict, lang: str) -> str:
     """The code's own note, used when the model is not available or its note fails the check twice."""
     main = sheet["causes"][0] if sheet["causes"] else {"cause": sheet["main_cause"], "amount": sheet["change"]}
+    if sheet.get("same_as_metric"):  # not "conversion ... mainly from conversion": the largest part instead
+        main = {"cause": sheet["main_part"]["part"], "amount": sheet["main_part"]["amount"]}
     if lang == "pl":
         return (f"{sheet['days']}: {sheet['metric']} ({sheet['segment']}) {sheet['change']} "
-                f"({sheet['change_percent']}) względem oczekiwań, głównie przez: {main['cause']} "
+                f"({sheet['change_percent']}) względem oczekiwań, głównie: {main['cause']} "
                 f"({main['amount']}); warto {sheet['suggested_check']}.")
     return (f"{sheet['days']}: {sheet['metric']} ({sheet['segment']}) {sheet['change']} "
-            f"({sheet['change_percent']}) against what was expected, mainly from {main['cause']} "
+            f"({sheet['change_percent']}) against what was expected, mainly {main['cause']} "
             f"({main['amount']}); {sheet['suggested_check']}.")
 
 

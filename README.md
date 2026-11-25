@@ -155,7 +155,8 @@ przyczyną zdarzenia z klucza odpowiedzi.
 ![Główna przyczyna: zwroty, +157 553 zł, czyli 100% zmiany](docs/img/bridge.png)
 
 Notatka do tej anomalii (z szablonu kodu): „15–24 lipca 2023: koszt zwrotów (Odzież) +157 553 zł (+133%) względem
-oczekiwań, głównie przez: zwroty (+157 553 zł); warto sprawdzić partię produktu z największą liczbą zwrotów.”
+oczekiwań, głównie: wyższy koszt jednego zwrotu (+73 956 zł); warto sprawdzić partię produktu z największą liczbą
+zwrotów.”
 <!-- /generated:bridge -->
 
 **Co to znaczy dla kierownika.** Zamiast „marża spadła” dostaje konkretną przyczynę z kwotą i wie, gdzie zacząć:
@@ -374,7 +375,7 @@ pip install -r requirements-dev.txt
 python -m pytest
 ```
 
-48 testów sprawdza na małym sklepie syntetycznym (bez plików danych i bez sieci, ok. 15 s): ekonomię linii, prognozę
+49 testów sprawdza na małym sklepie syntetycznym (bez plików danych i bez sieci, ok. 15 s): ekonomię linii, prognozę
 tylko z przeszłości, wstrzykiwanie scenariuszy, wykrywanie, sumę części co do grosza, kontrolę liczb w notatkach
 i widoki aplikacji.
 

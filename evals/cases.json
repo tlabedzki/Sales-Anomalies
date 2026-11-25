@@ -7,6 +7,10 @@
   "sheets": {
    "pl": {
     "segment": "Odzież · media społecznościowe",
+    "main_part": {
+     "part": "wolumen: odwiedziny",
+     "amount": "+370 849 zł"
+    },
     "metric": "sprzedaż",
     "days": "26 maja – 8 czerwca 2023",
     "length": "14 dni",
@@ -39,6 +43,10 @@
    },
    "en": {
     "segment": "Clothing · social media",
+    "main_part": {
+     "part": "volume: visits",
+     "amount": "+PLN 370,849"
+    },
     "metric": "sales",
     "days": "26 May – 8 June 2023",
     "length": "14 days",
@@ -79,6 +87,10 @@
   "sheets": {
    "pl": {
     "segment": "cały sklep",
+    "main_part": {
+     "part": "zamówienia z urządzeń: telefony",
+     "amount": "−328 314 zł"
+    },
     "metric": "konwersja",
     "days": "10–11 sierpnia 2023",
     "length": "2 dni",
@@ -99,10 +111,15 @@
      "najwięcej na urządzeniach: telefony"
     ],
     "suggested_check": "sprawdzić koszyk i płatności na telefonach",
+    "same_as_metric": true,
     "metric_note": "zmiana w złotych to sprzedaż utraconych albo dodatkowych zamówień"
    },
    "en": {
     "segment": "whole shop",
+    "main_part": {
+     "part": "orders on mobile",
+     "amount": "−PLN 328,314"
+    },
     "metric": "conversion",
     "days": "10–11 August 2023",
     "length": "2 days",
@@ -123,6 +140,7 @@
      "mostly on mobile"
     ],
     "suggested_check": "check the cart and payments on phones",
+    "same_as_metric": true,
     "metric_note": "the change in PLN is the sales of the orders lost or gained"
    }
   }
@@ -135,6 +153,10 @@
   "sheets": {
    "pl": {
     "segment": "Odzież",
+    "main_part": {
+     "part": "wyższy koszt jednego zwrotu",
+     "amount": "+73 956 zł"
+    },
     "metric": "koszt zwrotów",
     "days": "15–24 lipca 2023",
     "length": "10 dni",
@@ -154,10 +176,15 @@
      "zwroty: 783 zamiast oczekiwanych 459",
      "najczęstszy powód: wadliwy"
     ],
-    "suggested_check": "sprawdzić partię produktu z największą liczbą zwrotów"
+    "suggested_check": "sprawdzić partię produktu z największą liczbą zwrotów",
+    "same_as_metric": true
    },
    "en": {
     "segment": "Clothing",
+    "main_part": {
+     "part": "a higher cost per return",
+     "amount": "+PLN 73,956"
+    },
     "metric": "cost of returns",
     "days": "15–24 July 2023",
     "length": "10 days",
@@ -177,7 +204,8 @@
      "returns: 783 instead of the expected 459",
      "most common reason: defective"
     ],
-    "suggested_check": "check the batch of the most returned product"
+    "suggested_check": "check the batch of the most returned product",
+    "same_as_metric": true
    }
   }
  },
@@ -189,6 +217,10 @@
   "sheets": {
    "pl": {
     "segment": "cały sklep",
+    "main_part": {
+     "part": "wolumen: odwiedziny",
+     "amount": "−108 909 zł"
+    },
     "metric": "marża",
     "days": "26 maja 2024",
     "length": "1 dzień",
@@ -220,6 +252,10 @@
    },
    "en": {
     "segment": "whole shop",
+    "main_part": {
+     "part": "volume: visits",
+     "amount": "−PLN 108,909"
+    },
     "metric": "margin",
     "days": "26 May 2024",
     "length": "1 day",
@@ -259,6 +295,10 @@
   "sheets": {
    "pl": {
     "segment": "Zwierzęta",
+    "main_part": {
+     "part": "wolumen: odwiedziny",
+     "amount": "+37 799 zł"
+    },
     "metric": "sprzedaż",
     "days": "23–29 listopada 2024",
     "length": "7 dni",
@@ -290,6 +330,10 @@
    },
    "en": {
     "segment": "Pet Supplies",
+    "main_part": {
+     "part": "volume: visits",
+     "amount": "+PLN 37,799"
+    },
     "metric": "sales",
     "days": "23–29 November 2024",
     "length": "7 days",
@@ -329,6 +373,10 @@
   "sheets": {
    "pl": {
     "segment": "Odzież · wejścia bezpośrednie",
+    "main_part": {
+     "part": "wolumen: odwiedziny",
+     "amount": "+23 117 zł"
+    },
     "metric": "marża",
     "days": "8–14 maja 2024",
     "length": "7 dni",
@@ -360,6 +408,10 @@
    },
    "en": {
     "segment": "Clothing · direct",
+    "main_part": {
+     "part": "volume: visits",
+     "amount": "+PLN 23,117"
+    },
     "metric": "margin",
     "days": "8–14 May 2024",
     "length": "7 days",
@@ -399,6 +451,10 @@
   "sheets": {
    "pl": {
     "segment": "cały sklep",
+    "main_part": {
+     "part": "wysyłka",
+     "amount": "+41 592 zł"
+    },
     "metric": "koszty obsługi zamówień",
     "days": "8–16 stycznia 2023",
     "length": "9 dni",
@@ -425,6 +481,10 @@
    },
    "en": {
     "segment": "whole shop",
+    "main_part": {
+     "part": "shipping",
+     "amount": "+PLN 41,592"
+    },
     "metric": "order handling costs",
     "days": "8–16 January 2023",
     "length": "9 days",
@@ -459,6 +519,10 @@
   "sheets": {
    "pl": {
     "segment": "Zdrowie · wejścia bezpośrednie",
+    "main_part": {
+     "part": "wolumen: udział w zamówieniach",
+     "amount": "+12 526 zł"
+    },
     "metric": "sprzedaż",
     "days": "11–17 listopada 2023",
     "length": "7 dni",
@@ -489,6 +553,10 @@
    },
    "en": {
     "segment": "Health · direct",
+    "main_part": {
+     "part": "volume: share of orders",
+     "amount": "+PLN 12,526"
+    },
     "metric": "sales",
     "days": "11–17 November 2023",
     "length": "7 days",
@@ -527,6 +595,10 @@
   "sheets": {
    "pl": {
     "segment": "Elektronika",
+    "main_part": {
+     "part": "ceny i asortyment",
+     "amount": "+55 364 zł"
+    },
     "metric": "marża",
     "days": "27 listopada 2023",
     "length": "1 dzień",
@@ -557,6 +629,10 @@
    },
    "en": {
     "segment": "Electronics",
+    "main_part": {
+     "part": "prices and mix",
+     "amount": "+PLN 55,364"
+    },
     "metric": "margin",
     "days": "27 November 2023",
     "length": "1 day",
@@ -595,6 +671,10 @@
   "sheets": {
    "pl": {
     "segment": "kanał afiliacja",
+    "main_part": {
+     "part": "prowizja",
+     "amount": "+29 489 zł"
+    },
     "metric": "koszty obsługi zamówień",
     "days": "29 czerwca – 8 lipca 2024",
     "length": "10 dni",
@@ -619,6 +699,10 @@
    },
    "en": {
     "segment": "affiliate channel",
+    "main_part": {
+     "part": "commission",
+     "amount": "+PLN 29,489"
+    },
     "metric": "order handling costs",
     "days": "29 June – 8 July 2024",
     "length": "10 days",
@@ -651,6 +735,10 @@
   "sheets": {
    "pl": {
     "segment": "cały sklep",
+    "main_part": {
+     "part": "zamówienia z urządzeń: telefony",
+     "amount": "−296 581 zł"
+    },
     "metric": "konwersja",
     "days": "29–30 stycznia 2024",
     "length": "2 dni",
@@ -671,10 +759,15 @@
      "najwięcej na urządzeniach: telefony"
     ],
     "suggested_check": "sprawdzić koszyk i płatności na telefonach",
+    "same_as_metric": true,
     "metric_note": "zmiana w złotych to sprzedaż utraconych albo dodatkowych zamówień"
    },
    "en": {
     "segment": "whole shop",
+    "main_part": {
+     "part": "orders on mobile",
+     "amount": "−PLN 296,581"
+    },
     "metric": "conversion",
     "days": "29–30 January 2024",
     "length": "2 days",
@@ -695,6 +788,7 @@
      "mostly on mobile"
     ],
     "suggested_check": "check the cart and payments on phones",
+    "same_as_metric": true,
     "metric_note": "the change in PLN is the sales of the orders lost or gained"
    }
   }
@@ -707,6 +801,10 @@
   "sheets": {
    "pl": {
     "segment": "Odzież · e-mail",
+    "main_part": {
+     "part": "wolumen: odwiedziny",
+     "amount": "+163 894 zł"
+    },
     "metric": "sprzedaż",
     "days": "9–15 listopada 2023",
     "length": "7 dni",
@@ -739,6 +837,10 @@
    },
    "en": {
     "segment": "Clothing · email",
+    "main_part": {
+     "part": "volume: visits",
+     "amount": "+PLN 163,894"
+    },
     "metric": "sales",
     "days": "9–15 November 2023",
     "length": "7 days",
@@ -779,6 +881,10 @@
   "sheets": {
    "pl": {
     "segment": "cały sklep",
+    "main_part": {
+     "part": "zamówienia z urządzeń: telefony",
+     "amount": "−145 751 zł"
+    },
     "metric": "konwersja",
     "days": "19 marca 2023",
     "length": "1 dzień",
@@ -799,10 +905,15 @@
      "najwięcej na urządzeniach: telefony"
     ],
     "suggested_check": "sprawdzić koszyk i płatności na telefonach",
+    "same_as_metric": true,
     "metric_note": "zmiana w złotych to sprzedaż utraconych albo dodatkowych zamówień"
    },
    "en": {
     "segment": "whole shop",
+    "main_part": {
+     "part": "orders on mobile",
+     "amount": "−PLN 145,751"
+    },
     "metric": "conversion",
     "days": "19 March 2023",
     "length": "1 day",
@@ -823,6 +934,7 @@
      "mostly on mobile"
     ],
     "suggested_check": "check the cart and payments on phones",
+    "same_as_metric": true,
     "metric_note": "the change in PLN is the sales of the orders lost or gained"
    }
   }
@@ -835,6 +947,10 @@
   "sheets": {
    "pl": {
     "segment": "cały sklep",
+    "main_part": {
+     "part": "wolumen: odwiedziny",
+     "amount": "−94 998 zł"
+    },
     "metric": "marża",
     "days": "28 kwietnia 2023",
     "length": "1 dzień",
@@ -862,6 +978,10 @@
    },
    "en": {
     "segment": "whole shop",
+    "main_part": {
+     "part": "volume: visits",
+     "amount": "−PLN 94,998"
+    },
     "metric": "margin",
     "days": "28 April 2023",
     "length": "1 day",
@@ -897,6 +1017,10 @@
   "sheets": {
    "pl": {
     "segment": "Biuro · afiliacja",
+    "main_part": {
+     "part": "rabat",
+     "amount": "−1 100 zł"
+    },
     "metric": "marża",
     "days": "3 kwietnia 2024",
     "length": "1 dzień",
@@ -924,6 +1048,10 @@
    },
    "en": {
     "segment": "Office · affiliate",
+    "main_part": {
+     "part": "discount",
+     "amount": "−PLN 1,100"
+    },
     "metric": "margin",
     "days": "3 April 2024",
     "length": "1 day",
@@ -959,6 +1087,10 @@
   "sheets": {
    "pl": {
     "segment": "cały sklep",
+    "main_part": {
+     "part": "wolumen: odwiedziny",
+     "amount": "−455 300 zł"
+    },
     "metric": "sprzedaż",
     "days": "30 sierpnia 2024",
     "length": "1 dzień",
@@ -986,6 +1118,10 @@
    },
    "en": {
     "segment": "whole shop",
+    "main_part": {
+     "part": "volume: visits",
+     "amount": "−PLN 455,300"
+    },
     "metric": "sales",
     "days": "30 August 2024",
     "length": "1 day",
@@ -1021,6 +1157,10 @@
   "sheets": {
    "pl": {
     "segment": "Odzież",
+    "main_part": {
+     "part": "zwroty z powodu: wadliwy",
+     "amount": "+50 100 zł"
+    },
     "metric": "koszt zwrotów",
     "days": "15–28 lipca 2023",
     "length": "14 dni",
@@ -1040,10 +1180,15 @@
      "zwroty: 1 210 zamiast oczekiwanych 520",
      "najczęstszy powód: wadliwy"
     ],
-    "suggested_check": "sprawdzić partię produktu z największą liczbą zwrotów"
+    "suggested_check": "sprawdzić partię produktu z największą liczbą zwrotów",
+    "same_as_metric": true
    },
    "en": {
     "segment": "Clothing",
+    "main_part": {
+     "part": "returns marked defective",
+     "amount": "+PLN 50,100"
+    },
     "metric": "cost of returns",
     "days": "15–28 July 2023",
     "length": "14 days",
@@ -1063,7 +1208,8 @@
      "returns: 1,210 instead of the expected 520",
      "most common reason: defective"
     ],
-    "suggested_check": "check the batch of the most returned product"
+    "suggested_check": "check the batch of the most returned product",
+    "same_as_metric": true
    }
   }
  },
@@ -1075,6 +1221,10 @@
   "sheets": {
    "pl": {
     "segment": "kanał media społecznościowe",
+    "main_part": {
+     "part": "wolumen: odwiedziny",
+     "amount": "−3 100 zł"
+    },
     "metric": "marża",
     "days": "1–5 lutego 2024",
     "length": "5 dni",
@@ -1107,6 +1257,10 @@
    },
    "en": {
     "segment": "social media channel",
+    "main_part": {
+     "part": "volume: visits",
+     "amount": "−PLN 3,100"
+    },
     "metric": "margin",
     "days": "1–5 February 2024",
     "length": "5 days",
@@ -1147,6 +1301,10 @@
   "sheets": {
    "pl": {
     "segment": "Elektronika · wejścia bezpośrednie",
+    "main_part": {
+     "part": "jedno konto klienta",
+     "amount": "+47 800 zł"
+    },
     "metric": "sprzedaż",
     "days": "10–12 maja 2023",
     "length": "3 dni",
@@ -1174,6 +1332,10 @@
    },
    "en": {
     "segment": "Electronics · direct",
+    "main_part": {
+     "part": "one customer account",
+     "amount": "+PLN 47,800"
+    },
     "metric": "sales",
     "days": "10–12 May 2023",
     "length": "3 days",

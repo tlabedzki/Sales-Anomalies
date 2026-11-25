@@ -137,12 +137,12 @@ def blocks(n: dict) -> dict[str, str]:
         result = (f"**Result.** Over two years of daily data the check raised {s['anomalies']} anomalies; "
                   f"{s['hits']} of them are events of the answer key ({_p(s['precision'], lang)}), with "
                   f"{_n(s['false_per_month'], lang, 2)} false alarms a month. It found {s['scenarios_found']} of "
-                  f"{s['scenarios_total']} injected scenarios, every breakdown adds up to the change to the grosz, and "
+                  f"{s['scenarios_total']} injected scenarios, every breakdown adds up exactly to the change, and "
                   f"the main cause is right in {s['main_cause_right']} of {s['main_cause_graded']} real anomalies.")
         summary = (
             f"- **What worked:** {', '.join(x.lower() for x in full['label'])} (all found); {most_en}; shop outages of "
             f"`anomaly_data` ({outages_found} of {outages_events}). Each of the {s['breakdowns']} breakdowns adds "
-            f"up to its change to the grosz.\n"
+            f"up exactly to its change.\n"
             f"- **What missed:** {', '.join(x.lower() for x in none['label'])} (none found): their changes have "
             f"a median of {_n(missed_median, lang, 1)} deviations of the daily noise and vanish in it. Of the "
             f"{fraud_events} fraud rings in "

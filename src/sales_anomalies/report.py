@@ -169,4 +169,4 @@ def bridge_title(b: Breakdown, lang: str = "en") -> tuple[str, str]:
     return (f"Main cause: {i18n.CAUSES['en'][b.main_cause]}, {i18n.money(total, 'en', sign=True)}, "
             f"{i18n.percent(share, 'en', sign=False)} of the change",
             "From the expected value to the actual one. A cause can have several parts (conversion: one per "
-            "device); the largest part of the main cause is in copper. The parts add up to the grosz.")
+            "device); the largest part of the main cause is in copper. The parts add up exactly.")

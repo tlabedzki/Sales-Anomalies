@@ -93,7 +93,7 @@ def summary_stats(r: report.Results) -> html.Div:
         stat("of them real", i18n.percent(s["precision"], "en", sign=False), "precision against the answer key"),
         stat("injected anomalies found", f"{s['scenarios_found']}/{s['scenarios_total']}",
              i18n.percent(s["recall_scenarios"], "en", sign=False) + " recall"),
-        stat("causes add up", f"{s['breakdowns_exact_to_grosz']}/{s['breakdowns']}", "to the grosz"),
+        stat("causes add up", f"{s['breakdowns_exact_to_grosz']}/{s['breakdowns']}", "exactly, to the last grosz"),
         stat("main cause right", f"{s['main_cause_right']}/{s['main_cause_graded']}", "of the real anomalies"),
     ], className="dg-stats")
 
@@ -203,7 +203,7 @@ def page():
         html.P("Lumo · daily anomaly check", className="dg-eyebrow"),
         html.H1(["Every unusual day, ", html.Em("explained"), " in złoty."], className="dg-h1"),
         html.P("Code finds the days and weeks when sales, margin, returns, costs or conversion left their expected "
-               "band, splits each change into causes that add up to the grosz, and a language model writes one or "
+               "band, splits each change into causes that add up exactly, and a language model writes one or "
                "two sentences from those numbers only.", className="dg-lead"),
     ], className="dg-hero")
     try:

@@ -1,5 +1,5 @@
 """
-Why did it move? Every anomaly split into causes in PLN that add up to the change to the grosz.
+Why did it move? Every anomaly split into causes in PLN that add up exactly to the change (to the grosz).
 
 The change is observed - expected over the anomaly's days, on its main metric. Standard bridges:
 

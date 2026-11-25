@@ -149,3 +149,16 @@ def test_main_runs_from_the_repository_root_without_pythonpath(tmp_path):
     result = subprocess.run([sys.executable, str(explain.ROOT / "main.py"), "--help"], cwd=tmp_path, env=env,
                             capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
+
+
+def test_a_note_does_not_repeat_the_metric_as_its_cause():
+    parts = [Part("conversion_mobile", "conversion", -3283.14, grosz=-328314),
+             Part("conversion_desktop", "conversion", 28.12, grosz=2812)]
+    b = Breakdown(5, "*|*", "conversion", "down", "2023-08-10", "2023-08-11", 3514.85, 6769.87, -325502, parts,
+                  "conversion", {"orders": 485.0, "expected_orders": 934.0})
+    for lang, part in (("en", "orders on mobile"), ("pl", "zamówienia z urządzeń: telefony")):
+        sheet = explain.facts(b, lang)
+        note = explain.template(sheet, lang)
+        assert part in note and sheet["main_part"]["amount"] in note
+        assert note.lower().count(sheet["metric"].lower()) == 1, note
+        assert explain.check(note, sheet, lang)["ok"]
