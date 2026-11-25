@@ -138,3 +138,14 @@ def test_polish_plurals_in_the_readme():
     forms = ("alarm", "alarmy", "alarmów")
     assert [plural_pl(n, *forms) for n in (1, 2, 5, 12, 22, 25)] == \
         ["alarm", "alarmy", "alarmów", "alarmów", "alarmy", "alarmów"]
+
+
+def test_main_runs_from_the_repository_root_without_pythonpath(tmp_path):
+    import os
+    import subprocess
+    import sys
+
+    env = {k: v for k, v in os.environ.items() if k != "PYTHONPATH"}
+    result = subprocess.run([sys.executable, str(explain.ROOT / "main.py"), "--help"], cwd=tmp_path, env=env,
+                            capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr

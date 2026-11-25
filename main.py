@@ -13,8 +13,10 @@ import argparse
 import os
 import sys
 import time
+from pathlib import Path
 
 os.environ.setdefault("MPLBACKEND", "Agg")
+sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 
 from sales_anomalies import explain, pipeline  # noqa: E402
 from sales_anomalies.data import REPORT_SEED, missing_data_message, seed_dir  # noqa: E402
