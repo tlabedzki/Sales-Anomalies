@@ -163,17 +163,24 @@ def facts(b: Breakdown, lang: str) -> dict:
     return sheet
 
 
+# Polish sentences need the genitive: "zamówienia z telefonów", "zwroty z powodu wady".
+DEVICES_GENITIVE_PL = {"mobile": "telefonów", "desktop": "komputerów", "tablet": "tabletów"}
+REASONS_GENITIVE_PL = {"wrong_size": "złego rozmiaru", "changed_mind": "zmiany zdania",
+                       "not_as_described": "niezgodności z opisem", "defective": "wady", "damaged": "uszkodzenia",
+                       "wrong_item": "pomyłki w zamówieniu"}
+
+
 def part_phrase(name: str, lang: str) -> str:
     """A part of a cause in words that fit a sentence ("orders on mobile", "returns marked defective")."""
     pl = lang == "pl"
     if name.startswith("conversion_"):
         device = name.removeprefix("conversion_")
-        return f"zamówienia z urządzeń: {i18n.DEVICES_PL.get(device, device)}" if pl else f"orders on {device}"
+        return f"zamówienia z {DEVICES_GENITIVE_PL.get(device, device)}" if pl else f"orders on {device}"
     if name == "returns_cost_each":
         return "wyższy koszt jednego zwrotu" if pl else "a higher cost per return"
     if name.startswith("returns_"):
         reason = name.removeprefix("returns_")
-        return (f"zwroty z powodu: {i18n.REASONS_PL.get(reason, reason)}" if pl
+        return (f"zwroty z powodu {REASONS_GENITIVE_PL.get(reason, reason)}" if pl
                 else f"returns marked {reason.replace('_', ' ')}")
     from sales_anomalies.figures import part_label
 
@@ -268,11 +275,13 @@ def check(text: str, sheet: dict, lang: str) -> dict:
 def template(sheet: dict, lang: str) -> str:
     """The code's own note, used when the model is not available or its note fails the check twice."""
     main = sheet["causes"][0] if sheet["causes"] else {"cause": sheet["main_cause"], "amount": sheet["change"]}
+    lead = "przez "  # "głównie przez rabaty"; a part reads on its own: "głównie zamówienia z telefonów"
     if sheet.get("same_as_metric"):  # not "conversion ... mainly from conversion": the largest part instead
         main = {"cause": sheet["main_part"]["part"], "amount": sheet["main_part"]["amount"]}
+        lead = ""
     if lang == "pl":
         return (f"{sheet['days']}: {sheet['metric']} ({sheet['segment']}) {sheet['change']} "
-                f"({sheet['change_percent']}) względem oczekiwań, głównie: {main['cause']} "
+                f"({sheet['change_percent']}) względem oczekiwań, głównie {lead}{main['cause']} "
                 f"({main['amount']}); warto {sheet['suggested_check']}.")
     return (f"{sheet['days']}: {sheet['metric']} ({sheet['segment']}) {sheet['change']} "
             f"({sheet['change_percent']}) against what was expected, mainly {main['cause']} "

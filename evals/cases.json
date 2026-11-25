@@ -88,7 +88,7 @@
    "pl": {
     "segment": "cały sklep",
     "main_part": {
-     "part": "zamówienia z urządzeń: telefony",
+     "part": "zamówienia z telefonów",
      "amount": "−328 314 zł"
     },
     "metric": "konwersja",
@@ -736,7 +736,7 @@
    "pl": {
     "segment": "cały sklep",
     "main_part": {
-     "part": "zamówienia z urządzeń: telefony",
+     "part": "zamówienia z telefonów",
      "amount": "−296 581 zł"
     },
     "metric": "konwersja",
@@ -882,7 +882,7 @@
    "pl": {
     "segment": "cały sklep",
     "main_part": {
-     "part": "zamówienia z urządzeń: telefony",
+     "part": "zamówienia z telefonów",
      "amount": "−145 751 zł"
     },
     "metric": "konwersja",
@@ -1158,7 +1158,7 @@
    "pl": {
     "segment": "Odzież",
     "main_part": {
-     "part": "zwroty z powodu: wadliwy",
+     "part": "zwroty z powodu wady",
      "amount": "+50 100 zł"
     },
     "metric": "koszt zwrotów",

@@ -155,7 +155,7 @@ przyczyną zdarzenia z klucza odpowiedzi.
 ![Główna przyczyna: zwroty, +157 553 zł, czyli 100% zmiany](docs/img/bridge.png)
 
 Notatka do tej anomalii (z szablonu kodu): „15–24 lipca 2023: koszt zwrotów (Odzież) +157 553 zł (+133%) względem
-oczekiwań, głównie: wyższy koszt jednego zwrotu (+73 956 zł); warto sprawdzić partię produktu z największą liczbą
+oczekiwań, głównie wyższy koszt jednego zwrotu (+73 956 zł); warto sprawdzić partię produktu z największą liczbą
 zwrotów.”
 <!-- /generated:bridge -->
 

@@ -156,9 +156,10 @@ def test_a_note_does_not_repeat_the_metric_as_its_cause():
              Part("conversion_desktop", "conversion", 28.12, grosz=2812)]
     b = Breakdown(5, "*|*", "conversion", "down", "2023-08-10", "2023-08-11", 3514.85, 6769.87, -325502, parts,
                   "conversion", {"orders": 485.0, "expected_orders": 934.0})
-    for lang, part in (("en", "orders on mobile"), ("pl", "zamówienia z urządzeń: telefony")):
+    for lang, part in (("en", "orders on mobile"), ("pl", "głównie zamówienia z telefonów")):
         sheet = explain.facts(b, lang)
         note = explain.template(sheet, lang)
         assert part in note and sheet["main_part"]["amount"] in note
         assert note.lower().count(sheet["metric"].lower()) == 1, note
         assert explain.check(note, sheet, lang)["ok"]
+        assert note.count(":") == 1, note   # only after the days: no "głównie: … : …"
