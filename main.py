@@ -3,7 +3,6 @@ The daily anomaly check of the fictional shop Lumo over 2023-2024, graded agains
 
     python main.py              # seed 42 with the injected scenarios and the negative control; writes output/
     python main.py --no-control # skip the run without scenarios (about half the time)
-    python main.py --live       # write missing notes with the language model (needs ANTHROPIC_API_KEY)
 
 Run python scripts/get_data.py first.
 """
@@ -18,7 +17,7 @@ from pathlib import Path
 os.environ.setdefault("MPLBACKEND", "Agg")
 sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 
-from sales_anomalies import explain, pipeline  # noqa: E402
+from sales_anomalies import notes, pipeline  # noqa: E402
 from sales_anomalies.data import REPORT_SEED, missing_data_message, seed_dir  # noqa: E402
 
 
@@ -26,7 +25,6 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--seed", type=int, default=REPORT_SEED)
     parser.add_argument("--no-control", action="store_true", help="skip the negative control run")
-    parser.add_argument("--live", action="store_true", help="write missing notes with the model (needs a key)")
     args = parser.parse_args()
     if not (seed_dir(args.seed) / "order_data.parquet").exists():
         print(missing_data_message(seed_dir(args.seed)), file=sys.stderr)
@@ -35,7 +33,7 @@ def main() -> int:
     started = time.time()
     run = pipeline.run(args.seed, control=not args.no_control)
     pipeline.save(run)
-    notes = explain.describe(run.breakdowns, live=args.live)
+    written = notes.notes(run.breakdowns)
     s = run.summary
     print(f"Lumo, seed {s['seed']}, {s['detection_start']} to {s['period'][1]} ({time.time() - started:.0f} s)")
     print(f"  anomalies {s['anomalies']}: {s['hits']} real, {s['false_alarms']} false "
@@ -48,8 +46,7 @@ def main() -> int:
               f"({s['control']['false_per_month']:.2f} a month)")
     print(f"  breakdowns exact to the grosz: {s['breakdowns_exact_to_grosz']} of {s['breakdowns']}")
     print(f"  main cause right: {s['main_cause_right']} of {s['main_cause_graded']}")
-    from_model = sum(1 for n in notes.values() if n["source"] == "model")
-    print(f"  notes: {from_model} of {len(notes)} written by {explain.MODEL}, the rest by the template")
+    print(f"  notes for the manager: {len(written)} (Polish and English)")
     if s["breakdowns_exact_to_grosz"] != s["breakdowns"]:
         print("Some breakdowns do not add up to the change", file=sys.stderr)
         return 2

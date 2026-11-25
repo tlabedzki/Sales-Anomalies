@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from sales_anomalies import explain, i18n
+from sales_anomalies import i18n, notes
 from sales_anomalies.decompose import Breakdown, Part
 from sales_anomalies.pipeline import OUTPUT_DIR
 
@@ -45,12 +45,8 @@ class Results:
     def scores(self) -> pd.DataFrame:
         return pd.read_parquet(self.directory / "scores.parquet")
 
-    @cached_property
-    def notes(self) -> dict:
-        return explain.describe(list(self.breakdowns.values()), live=False)
-
-    def note(self, anomaly_id: int, lang: str = "en") -> dict:
-        return self.notes[f"{explain.anomaly_key(self.breakdowns[anomaly_id])}|{lang}"]
+    def note(self, anomaly_id: int, lang: str = "en") -> str:
+        return notes.note(self.breakdowns[anomaly_id], lang)
 
     def row(self, anomaly_id: int) -> pd.Series:
         return self.anomalies.set_index("anomaly_id").loc[anomaly_id]

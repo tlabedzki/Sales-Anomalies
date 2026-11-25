@@ -28,14 +28,13 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from browser import Browser  # noqa: E402
 
-from sales_anomalies import explain, figures, i18n, report  # noqa: E402
+from sales_anomalies import figures, i18n, notes, report  # noqa: E402
 from sales_anomalies import theme as t  # noqa: E402
 
 IMG = ROOT / "docs" / "img"
 README = ROOT / "README.md"
 CACHE = ROOT / ".cache" / "charts"
 FONTS = ROOT / "ui" / "assets" / "fonts"
-EVALS = ROOT / "evals" / "results.json"
 CHART_WIDTH, PAD, SCALE = 712, 24, 2  # CSS pixels; the PNG is (712 + 2 * 24) * 2 = 1520 px wide
 DEMO = ROOT / "docs" / "img" / "demo.json"   # which anomalies the hero shows (written by make_demo_svg.py)
 
@@ -95,13 +94,11 @@ def size_data(r: report.Results, lang: str) -> pd.DataFrame:
 
 
 def note_summary(r: report.Results) -> dict:
-    cache = explain.load_cache()
-    totals = cache.get("totals", {})
-    notes = [r.note(i, lang) for i in r.breakdowns for lang in ("pl", "en")]
-    evals = json.loads(EVALS.read_text(encoding="utf-8")) if EVALS.exists() else None
-    return {"totals": totals, "from_model": sum(n["source"] == "model" for n in notes), "notes": len(notes),
-            "retried": sum(len(n.get("attempts", [])) > 1 for n in notes if n["source"] == "model"),
-            "evals": evals}
+    """The note of every anomaly in both languages, each through the number check."""
+    checked = [notes.check(r.note(i, lang), notes.facts(b, lang), lang)
+               for i, b in r.breakdowns.items() for lang in ("pl", "en")]
+    return {"notes": len(checked), "passed": sum(c["ok"] for c in checked),
+            "invented": sum(len(c["invented"]) for c in checked)}
 
 
 def numbers(lang: str) -> dict:

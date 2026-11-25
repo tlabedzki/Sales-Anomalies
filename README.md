@@ -12,9 +12,9 @@ procent to zwykły szum, czy sygnał, że coś się zepsuło: rabat, przewoźnik
 Zanim ktoś to sprawdzi ręcznie, mijają dni, a pieniądze uciekają.
 
 **Podejście.** Kod codziennie porównuje każdy fragment sklepu z prognozą liczoną tylko z przeszłości, rozkłada
-każde odchylenie na przyczyny, które sumują się co do grosza, a model językowy opisuje gotowe liczby i niczego nie
-liczy sam. Wszystko jest oceniane kluczem odpowiedzi: anomaliami wstrzykniętymi do danych o znanej przyczynie
-i zdarzeniami, które oznaczył sam generator danych.
+każde odchylenie na przyczyny, które sumują się co do grosza, i składa z tych liczb jedno zdanie dla kierownika.
+Wszystko jest oceniane kluczem odpowiedzi: anomaliami wstrzykniętymi do danych o znanej przyczynie i zdarzeniami,
+które oznaczył sam generator danych.
 
 <!-- generated:result -->
 **Wynik.** W dwóch latach dziennych danych wykrywanie zgłosiło 27 anomalii; 15 z nich to zdarzenia z klucza odpowiedzi
@@ -29,7 +29,7 @@ zmianą co do grosza, a główna przyczyna jest trafna w 15 z 15 prawdziwych ano
 </picture>
 <!-- /generated:hero -->
 
-**Stack:** Python · pandas · NumPy · DuckDB · Plotly · Dash · Claude API · pytest
+**Stack:** Python · pandas · NumPy · DuckDB · Plotly · Dash · pytest
 
 <!-- generated:summary -->
 - **Trafione:** płatność nie działa na telefonach (wszystkie przypadki); w większości: fala zwrotów wadliwej partii (3 z
@@ -51,7 +51,7 @@ w ostatnim tygodniu coś odbiegło od normy, w której części sklepu, dlaczego
 | Czy w którejś części sklepu sprzedaż, marża, zwroty, koszty albo konwersja odbiegły od normy? | Prognoza z przeszłości i z-score na dzień i na 7 dni (rozdział 3) | Scenariusze wstrzyknięte przez projekt i `anomaly_data` |
 | Które zmiany wykrywanie łapie, a które gubi? | Ocena każdej anomalii kluczem odpowiedzi (rozdział 4) | `scenario_truth`: rodzaj, segment, dni i wielkość każdej zmiany |
 | Dlaczego wynik się zmienił i za ile złotych? | Most marży i rozkład wolumenu LMDI (rozdział 5) | Przyczyna wpisana w scenariusz albo w zdarzenie generatora |
-| Jak powiedzieć to kierownikowi bez zmyślonych liczb? | Notatka modelu językowego sprawdzana kodem (rozdział 6) | Arkusz faktów policzony przez kod |
+| Jak powiedzieć to kierownikowi jednym zdaniem? | Zdanie złożone z arkusza faktów i sprawdzone kodem (rozdział 6) | Arkusz faktów policzony przez kod |
 
 ## 2. Skąd wiadomo, co jest prawdą
 
@@ -154,37 +154,35 @@ przyczyną zdarzenia z klucza odpowiedzi.
 <!-- generated:bridge -->
 ![Główna przyczyna: zwroty, +157 553 zł, czyli 100% zmiany](docs/img/bridge.png)
 
-Notatka do tej anomalii (z szablonu kodu): „15–24 lipca 2023: koszt zwrotów (Odzież) +157 553 zł (+133%) względem
-oczekiwań, głównie wyższy koszt jednego zwrotu (+73 956 zł); warto sprawdzić partię produktu z największą liczbą
-zwrotów.”
+Notatka do tej anomalii: „15–24 lipca 2023: koszt zwrotów (Odzież) +157 553 zł (+133%) względem oczekiwań, głównie
+wyższy koszt jednego zwrotu (+73 956 zł); warto sprawdzić partię produktu z największą liczbą zwrotów.”
 <!-- /generated:bridge -->
 
 **Co to znaczy dla kierownika.** Zamiast „marża spadła” dostaje konkretną przyczynę z kwotą i wie, gdzie zacząć:
 w ustawieniach rabatów, u przewoźnika albo w kampanii.
 
-## 6. Zdanie dla kierownika: kod liczy, AI tłumaczy
+## 6. Zdanie dla kierownika z policzonych liczb
 
 **Pytanie.** Jak zamienić rozkład na jedno albo dwa zdania, które nie przekręcą liczb?
 
 **Co robi analiza.** Kod zapisuje fakty anomalii w arkuszu gotowych napisów: segment, dni, zmianę w złotych
-i procentach, trzy główne przyczyny z kwotami, dowody i podpowiedź, co sprawdzić. Model Claude Haiku 5.5 (najtańszy
-aktualny model Claude, z wyjściem w ustalonym formacie JSON) przepisuje arkusz na notatkę. Kod sprawdza każdą liczbę
-w notatce: musi stać w arkuszu, inaczej notatka wraca do modelu z listą błędów, a po drugiej odmowie zostaje
-zdanie z szablonu kodu. Notatki są zapisane w repozytorium (`data/explanations.json`), więc aplikacja i README
-działają bez klucza API.
+i procentach, trzy główne przyczyny z kwotami, dowody i podpowiedź, co sprawdzić. Z arkusza powstaje jedno zdanie
+według stałego wzoru dla każdego języka: dni, miara i część sklepu, zmiana, główna przyczyna z kwotą i to, co warto
+sprawdzić. Gdy przyczyną jest sama miara (konwersja, zwroty), zdanie podaje jej największą część, np. zamówienia
+z telefonów.
 
-**Jak to sprawdzamy.** Evale w `evals/` oceniają kodem pierwszą wersję notatki z każdego przypadku: zero liczb spoza
-arkusza, najwyżej dwa zdania i 50 słów, nazwana główna przyczyna, segment i kwota, zgodny kierunek zmiany.
+**Jak to sprawdzamy.** Kontrola kodem: każda liczba w zdaniu musi stać w arkuszu z tym samym znakiem (spadek
+nie może stać się wzrostem), najwyżej dwa zdania i 60 słów.
 
 **Wynik.**
 
 <!-- generated:notes -->
-0 z 54 notatek (po polsku i po angielsku) napisał claude-haiku-5-5; 0 przeszło dopiero za drugim razem, po odrzuceniu
-pierwszej wersji przez kontrolę liczb, a pozostałe mają zdanie z szablonu kodu. W notatkach, które trafiły do aplikacji,
-nie ma ani jednej liczby spoza arkusza faktów. Wszystkie wywołania kosztowały 0,0000 USD (0 tokenów wejścia, 0 wyjścia).
+Notatki powstały dla wszystkich 27 anomalii, po polsku i po angielsku: 54 zdania. Kontrolę liczb przeszło 54 z 54; liczb
+spoza arkusza faktów: 0.
 <!-- /generated:notes -->
 
-**Co to znaczy dla kierownika.** Czyta zdanie jak od analityka, a każda liczba w nim pochodzi z kodu.
+**Co to znaczy dla kierownika.** Czyta jedno zdanie z kwotą i przyczyną, a każda liczba w nim pochodzi
+z obliczeń.
 
 ## 7. Analiza kontra prawda
 
@@ -279,12 +277,10 @@ python -m ui.app
 kontroli, ocenę kluczem i kontrolę bez scenariuszy (ok. 4 minut) i zapisuje wyniki do `output/`. Aplikacja działa pod
 adresem http://127.0.0.1:8050; zatrzymasz ją przez Ctrl+C.
 
-### Model językowy
+### Progi alarmów
 
-Notatki są zapisane w repozytorium, więc klucz nie jest potrzebny. Żeby napisać brakujące notatki na żywo, wpisz
-`ANTHROPIC_API_KEY=...` do pliku `.env` w katalogu projektu i uruchom `python main.py --live`. Progi alarmów są w
-repozytorium; `python scripts/calibrate.py` dobiera je od nowa na sklepie z ziarnem 7. Evale: `python -m evals.run`
-(jeden przebieg) albo `python -m evals.run --repeat 3`.
+Progi są w repozytorium (`src/sales_anomalies/thresholds.json`); `python scripts/calibrate.py` dobiera je od nowa na
+sklepie z ziarnem 7 (ok. 2 minuty).
 
 ## Dane
 
@@ -360,8 +356,7 @@ src/sales_anomalies/
   scenarios.py                 wstrzyknięte anomalie i ich prawda
   truth.py, evaluate.py        klucz odpowiedzi i ocena
   decompose.py                 przyczyny w złotych co do grosza
-  explain.py                   notatki modelu i kontrola liczb
-evals/                         przypadki, oceny kodem, wyniki
+  notes.py                     zdanie dla kierownika i kontrola liczb
 ui/app.py                      aplikacja Dash + Mantine
 tests/                         pytest na małym sklepie syntetycznym
 ```
@@ -375,7 +370,7 @@ pip install -r requirements-dev.txt
 python -m pytest
 ```
 
-49 testów sprawdza na małym sklepie syntetycznym (bez plików danych i bez sieci, ok. 15 s): ekonomię linii, prognozę
+45 testów sprawdza na małym sklepie syntetycznym (bez plików danych i bez sieci, ok. 15 s): ekonomię linii, prognozę
 tylko z przeszłości, wstrzykiwanie scenariuszy, wykrywanie, sumę części co do grosza, kontrolę liczb w notatkach
 i widoki aplikacji.
 

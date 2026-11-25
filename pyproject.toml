@@ -1,7 +1,7 @@
 [project]
 name = "sales-anomalies"
 version = "0.1.0"
-description = "Daily sales, margin, return and conversion anomalies of a fictional online shop, split into causes in PLN and explained by an LLM"
+description = "Daily sales, margin, return and conversion anomalies of a fictional online shop, split into causes in PLN and summed up in a sentence"
 requires-python = ">=3.11"
 license = "MIT"
 

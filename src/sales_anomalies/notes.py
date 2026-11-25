@@ -1,63 +1,26 @@
 """
-Code computes, AI explains: one or two sentences for the shop manager, written by a language model from numbers
-the code has already computed, and checked by code before anyone sees them.
+Code computes and code writes: one or two sentences for the shop manager about each anomaly, built from numbers
+the breakdown has already computed.
 
 1. facts(): the breakdown as a small sheet of ready-made strings (segment, days, change in PLN and %, the main
-   causes with their amounts, the evidence, a suggested check). Every number the text may use is in it.
-2. The model (Claude Haiku 5.5, structured JSON output) rewrites the sheet as a note. It is told to copy numbers
-   exactly and to add nothing.
-3. check(): every number in the note must be one of the sheet's numbers (same value, any spacing), the note has at
-   most two sentences and MAX_WORDS words. A note that fails gets one retry with the list of problems; if it fails
-   again, the code's own sentence (template()) is used and marked as such.
-4. Notes are saved with their token counts and cost in data/explanations.json, so the app and the README work
-   without a key. With ANTHROPIC_API_KEY set (in the environment or in a .env file in the project) missing notes are
-   written live.
+   causes with their amounts, the evidence, a suggested check). Every number a note may use is in it.
+2. note(): the sentence from the sheet (a fixed pattern per language). When the main cause is the metric itself
+   (conversion, returns) it names the largest part instead, so it never reads "conversion, mainly conversion".
+3. check(): every number in the note is one of the sheet's numbers with the same sign, the note has at most two
+   sentences and MAX_WORDS words. The tests run it on the notes of the synthetic shop.
 """
 from __future__ import annotations
 
-import hashlib
 import json
-import os
 import re
-from dataclasses import dataclass
-from pathlib import Path
 
 import pandas as pd
 
 from sales_anomalies import i18n
-from sales_anomalies.data import ROOT
 from sales_anomalies.decompose import Breakdown
 
-MODEL = "claude-haiku-5-5"
-PRICE_PER_MTOK = {"input": 0.10, "output": 0.50}   # USD, Claude Haiku 5.5, prompts up to 100K tokens
-PROMPT_VERSION = 1
-MAX_WORDS = 50
-MAX_TOKENS = 2048
-CACHE_FILE = ROOT / "data" / "explanations.json"
-ENV_FILE = ROOT / ".env"
+MAX_WORDS = 60
 TOP_PARTS = 3
-
-SYSTEM = """You write a short note for the manager of an online shop about one unusual period that code has \
-already found and measured. The user message is a JSON sheet of facts; every number in it was computed by code.
-
-Write the note in {language}: one or two sentences, at most {max_words} words. Say what moved (metric, part of the \
-shop, days, change in PLN and in percent against what was expected), name the main cause with its amount, and end \
-with the suggested check.
-
-Rules:
-- Use only numbers that appear in the sheet and copy each exactly as written, with its sign and unit.
-- Do not round, add up, subtract or convert numbers, and do not work out new percentages or totals.
-- Do not add causes, guesses or advice that are not in the sheet.
-- Name the part of the shop, the metric and the causes as the sheet does. When "same_as_metric" is true, the main
-  cause is the metric itself: name the main part ("main_part") with its amount instead of repeating the metric.
-- No greeting, no list, no quotation marks.{language_rules}
-
-Return JSON with one field, "text"."""
-LANGUAGE = {"pl": ("Polish", "\n- In Polish, do not put a comma before \"i\"."), "en": ("English", "")}
-
-SCHEMA = {"type": "object", "properties": {"text": {"type": "string"}}, "required": ["text"],
-          "additionalProperties": False}
-
 
 # ---------------------------------------------------------------------------------------------------------------
 # Facts
@@ -127,7 +90,7 @@ def _evidence(b: Breakdown, lang: str) -> list[str]:
 
 
 def facts(b: Breakdown, lang: str) -> dict:
-    """The sheet of ready-made strings the model writes from (all numbers formatted for the language)."""
+    """The sheet of ready-made strings a note is written from (all numbers formatted for the language)."""
     start, end = pd.Timestamp(b.start), pd.Timestamp(b.end)
     expected = b.expected
     change = b.change
@@ -197,10 +160,6 @@ def main_part(b: Breakdown, lang: str) -> dict:
 # Metrics whose main cause has the same name: the note names the largest part instead of "conversion, mainly from
 # conversion".
 SAME_AS_METRIC = {"conversion": "conversion", "returns": "returns"}
-
-
-def facts_hash(sheet: dict) -> str:
-    return hashlib.sha256(json.dumps(sheet, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()[:16]
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -273,7 +232,7 @@ def check(text: str, sheet: dict, lang: str) -> dict:
 
 
 def template(sheet: dict, lang: str) -> str:
-    """The code's own note, used when the model is not available or its note fails the check twice."""
+    """The note: days, metric and part of the shop, the change against expected, the main cause, the check."""
     main = sheet["causes"][0] if sheet["causes"] else {"cause": sheet["main_cause"], "amount": sheet["change"]}
     lead = "przez "  # "głównie przez rabaty"; a part reads on its own: "głównie zamówienia z telefonów"
     if sheet.get("same_as_metric"):  # not "conversion ... mainly from conversion": the largest part instead
@@ -288,138 +247,12 @@ def template(sheet: dict, lang: str) -> str:
             f"({main['amount']}); {sheet['suggested_check']}.")
 
 
-# ---------------------------------------------------------------------------------------------------------------
-# Model
+
+def note(b: Breakdown, lang: str) -> str:
+    """The note on one anomaly in Polish or English."""
+    return template(facts(b, lang), lang)
 
 
-def api_key() -> str | None:
-    """ANTHROPIC_API_KEY from the environment or from the project's .env file (never printed or stored)."""
-    if os.environ.get("ANTHROPIC_API_KEY"):
-        return os.environ["ANTHROPIC_API_KEY"]
-    if ENV_FILE.exists():
-        for line in ENV_FILE.read_text(encoding="utf-8-sig").splitlines():
-            name, _, value = line.partition("=")
-            if name.strip() == "ANTHROPIC_API_KEY" and value.strip():
-                return value.strip().strip('"').strip("'")
-    return None
-
-
-def cost(usage: dict) -> float:
-    return (usage["input_tokens"] * PRICE_PER_MTOK["input"] + usage["output_tokens"] * PRICE_PER_MTOK["output"]) / 1e6
-
-
-@dataclass
-class Writer:
-    """Calls the model; one instance per run keeps the client and adds up the usage."""
-
-    client: object
-    calls: int = 0
-    input_tokens: int = 0
-    output_tokens: int = 0
-
-    @classmethod
-    def from_environment(cls) -> Writer | None:
-        key = api_key()
-        if not key:
-            return None
-        import anthropic
-
-        return cls(anthropic.Anthropic(api_key=key, max_retries=3))
-
-    def write(self, sheet: dict, lang: str, feedback: str | None = None) -> tuple[str, dict]:
-        language, rules = LANGUAGE[lang]
-        system = SYSTEM.format(language=language, max_words=MAX_WORDS, language_rules=rules)
-        content = json.dumps(sheet, ensure_ascii=False, indent=1)
-        if feedback:
-            content += f"\n\nYour previous note was rejected by the check: {feedback}. Write it again."
-        response = self.client.messages.create(
-            model=MODEL, max_tokens=MAX_TOKENS, system=system,
-            messages=[{"role": "user", "content": content}],
-            output_config={"effort": "low", "format": {"type": "json_schema", "schema": SCHEMA}},
-        )
-        usage = {"input_tokens": response.usage.input_tokens, "output_tokens": response.usage.output_tokens}
-        self.calls += 1
-        self.input_tokens += usage["input_tokens"]
-        self.output_tokens += usage["output_tokens"]
-        if response.stop_reason == "refusal":
-            return "", usage
-        text = next((block.text for block in response.content if block.type == "text"), "{}")
-        try:
-            return str(json.loads(text).get("text", "")).strip(), usage
-        except json.JSONDecodeError:
-            return "", usage
-
-
-def note(writer: Writer | None, sheet: dict, lang: str) -> dict:
-    """A checked note: the model's (with one retry) or the template's."""
-    attempts, usage = [], {"input_tokens": 0, "output_tokens": 0}
-    if writer is not None:
-        feedback = None
-        for _ in range(2):
-            text, used = writer.write(sheet, lang, feedback)
-            usage = {k: usage[k] + used[k] for k in usage}
-            verdict = check(text, sheet, lang)
-            attempts.append({"text": text, "check": verdict})
-            if verdict["ok"]:
-                return {"text": text, "source": "model", "check": verdict, "attempts": attempts, "usage": usage,
-                        "cost_usd": cost(usage)}
-            feedback = "; ".join(verdict["problems"])
-    text = template(sheet, lang)
-    return {"text": text, "source": "template", "check": check(text, sheet, lang), "attempts": attempts,
-            "usage": usage, "cost_usd": cost(usage)}
-
-
-# ---------------------------------------------------------------------------------------------------------------
-# Cache
-
-
-def load_cache(path: Path = CACHE_FILE) -> dict:
-    if path.exists():
-        return json.loads(path.read_text(encoding="utf-8"))
-    return {"model": MODEL, "prompt_version": PROMPT_VERSION, "items": {}}
-
-
-def save_cache(cache: dict, path: Path = CACHE_FILE) -> None:
-    items = cache["items"]
-    cache["totals"] = {
-        "notes": len(items),
-        "from_model": sum(1 for v in items.values() if v["source"] == "model"),
-        "calls": sum(len(v["attempts"]) for v in items.values()),
-        "input_tokens": sum(v["usage"]["input_tokens"] for v in items.values()),
-        "output_tokens": sum(v["usage"]["output_tokens"] for v in items.values()),
-        "cost_usd": round(sum(v["cost_usd"] for v in items.values()), 6),
-        "retried": sum(1 for v in items.values() if len(v["attempts"]) > 1),
-    }
-    cache["items"] = dict(sorted(items.items()))
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(cache, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
-
-
-def describe(breakdowns: list[Breakdown], langs: tuple[str, ...] = ("pl", "en"), live: bool | None = None,
-             path: Path = CACHE_FILE) -> dict[str, dict]:
-    """
-    Notes for every breakdown and language, keyed by '<anomaly key>|<lang>'. Saved notes are reused when the facts
-    and the prompt are the same; missing ones are written by the model when a key is available (live=None means:
-    when there is a key), otherwise by the template (not saved).
-    """
-    cache = load_cache(path)
-    writer = Writer.from_environment() if live is not False else None
-    result, changed = {}, False
-    for b in breakdowns:
-        for lang in langs:
-            sheet = facts(b, lang)
-            key = f"{anomaly_key(b)}|{lang}"
-            saved = cache["items"].get(key)
-            if saved and saved["facts_hash"] == facts_hash(sheet) and saved["prompt_version"] == PROMPT_VERSION:
-                result[key] = saved
-                continue
-            item = note(writer, sheet, lang)
-            item.update({"facts": sheet, "facts_hash": facts_hash(sheet), "prompt_version": PROMPT_VERSION,
-                         "model": MODEL if item["source"] == "model" else None, "lang": lang})
-            result[key] = item
-            if item["attempts"]:  # the model was asked: keep the outcome (also a template after two misses)
-                cache["items"][key] = item
-                changed = True
-    if changed:
-        save_cache(cache, path)
-    return result
+def notes(breakdowns: list[Breakdown], langs: tuple[str, ...] = ("pl", "en")) -> dict[str, str]:
+    """Notes of every breakdown and language, keyed by '<anomaly key>|<lang>'."""
+    return {f"{anomaly_key(b)}|{lang}": note(b, lang) for b in breakdowns for lang in langs}

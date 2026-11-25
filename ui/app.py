@@ -22,7 +22,7 @@ import dash._dash_renderer  # noqa: E402
 import dash_mantine_components as dmc  # noqa: E402
 from dash import ALL, Dash, Input, Output, State, ctx, dcc, html, no_update  # noqa: E402
 
-from sales_anomalies import explain, figures, i18n, report  # noqa: E402
+from sales_anomalies import figures, i18n, notes, report  # noqa: E402
 from ui import theme as t  # noqa: E402
 
 dash._dash_renderer._set_react_version("19.2.4")  # Mantine 3 needs React 19; Dash 4.5 still defaults to 18
@@ -109,21 +109,13 @@ def timeline_view(r: report.Results, metric: str, selected: int | None) -> html.
 
 
 def note_block(r: report.Results, anomaly_id: int) -> html.Div:
-    note = r.note(anomaly_id, "en")
-    if note["source"] == "model":
-        badge = f"Written by {explain.MODEL} from the numbers below; every number checked by code"
-        if len(note.get("attempts", [])) > 1:
-            badge += " (second try)"
-    else:
-        badge = "Written by code: no saved note from the model for this anomaly"
-    return html.Div([html.P(note["text"], className="sa-note-text"), html.Div(badge, className="sa-note-badge")],
-                    className="sa-note")
+    return html.Div(html.P(r.note(anomaly_id, "en"), className="sa-note-text"), className="sa-note")
 
 
 def anomaly_view(r: report.Results, anomaly_id: int) -> list:
     b = r.breakdowns[anomaly_id]
     row = r.row(anomaly_id)
-    sheet = explain.facts(b, "en")
+    sheet = notes.facts(b, "en")
     heading = f"{sheet['segment']} · {sheet['metric']} · {sheet['days']}"
     percent = report.change_percent(b)
     metric_unit = "orders" if b.metric == "conversion" else "PLN"
@@ -203,8 +195,8 @@ def page():
         html.P("Lumo · daily anomaly check", className="dg-eyebrow"),
         html.H1(["Every unusual day, ", html.Em("explained"), " in złoty."], className="dg-h1"),
         html.P("Code finds the days and weeks when sales, margin, returns, costs or conversion left their expected "
-               "band, splits each change into causes that add up exactly, and a language model writes one or "
-               "two sentences from those numbers only.", className="dg-lead"),
+               "band, splits each change into causes that add up exactly, and sums it up for the manager in one "
+               "sentence made of those numbers.", className="dg-lead"),
     ], className="dg-hero")
     try:
         r = results()

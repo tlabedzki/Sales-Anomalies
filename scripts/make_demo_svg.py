@@ -38,7 +38,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from browser import Browser, stop_tree, wait_for  # noqa: E402
 
-from sales_anomalies import explain, report  # noqa: E402
+from sales_anomalies import notes, report  # noqa: E402
 from sales_anomalies import theme as look  # noqa: E402
 
 OUT_DIR = ROOT / "docs" / "img"
@@ -78,22 +78,21 @@ def choose(r: report.Results) -> tuple[int, int]:
     for anomaly_id in right - {first}:
         kinds = r.events_of(anomaly_id)["kind"].tolist()
         rank = min((PREFERRED.index(k) for k in kinds if k in PREFERRED), default=len(PREFERRED))
-        model = r.note(anomaly_id, "en")["source"] == "model"
         same = r.breakdowns[anomaly_id].metric == r.breakdowns[first].metric
-        candidates.append((same, rank, not model, -abs(r.breakdowns[anomaly_id].change), anomaly_id))
+        candidates.append((same, rank, -abs(r.breakdowns[anomaly_id].change), anomaly_id))
     if not candidates:
         sys.exit("No second anomaly to show: the run has no injected anomaly with the right cause.")
     return first, sorted(candidates)[0][-1]
 
 
 def heading(r: report.Results, anomaly_id: int) -> str:
-    sheet = explain.facts(r.breakdowns[anomaly_id], "en")
+    sheet = notes.facts(r.breakdowns[anomaly_id], "en")
     return f"{sheet['segment']} · {sheet['metric']} · {sheet['days']}"
 
 
 def alt_text(r: report.Results, second: int, lang: str) -> str:
     b = r.breakdowns[second]
-    sheet = explain.facts(b, lang)
+    sheet = notes.facts(b, lang)
     cause = sheet["causes"][0] if sheet["causes"] else {"cause": sheet["main_cause"], "amount": sheet["change"]}
     count = r.summary["anomalies"]
     if lang == "pl":

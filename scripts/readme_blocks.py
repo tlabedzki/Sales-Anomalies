@@ -7,7 +7,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from sales_anomalies import explain, i18n
+from sales_anomalies import i18n
 
 ROOT = Path(__file__).resolve().parents[1]
 DEMO = ROOT / "docs" / "img" / "demo.json"
@@ -60,7 +60,6 @@ def blocks(n: dict) -> dict[str, str]:
     pl = lang == "pl"
     note = r.note(n["featured"], lang)
     notes = n["notes"]
-    totals = notes["totals"]
     demo = json.loads(DEMO.read_text(encoding="utf-8")) if DEMO.exists() else {}
     alt = demo.get(f"alt_{lang}", "")
     recall = n["recall"]
@@ -77,15 +76,11 @@ def blocks(n: dict) -> dict[str, str]:
     most_en = "most of: " + ", ".join(f"{r.label.lower()} ({r.found} of {r.events})" for r in most.itertuples())
     control = s.get("control", {})
     neg = s["negative_period"]
-    cost = totals.get("cost_usd", 0.0)
-    from_model = notes["from_model"]
-    evals = notes["evals"] or {}
     sizes = n["sizes"]
     found_small = float(sizes.loc[sizes["found"], "signal"].min()) if sizes["found"].any() else 0.0
     missed_big = float(sizes.loc[~sizes["found"], "signal"].max()) if (~sizes["found"]).any() else 0.0
     missed_median = float(sizes.loc[~sizes["found"], "signal"].median()) if (~sizes["found"]).any() else 0.0
     found_median = float(sizes.loc[sizes["found"], "signal"].median()) if sizes["found"].any() else 0.0
-    model = explain.MODEL
 
     if pl:
         result = (f"**Wynik.** W dwóch latach dziennych danych wykrywanie zgłosiło {s['anomalies']} anomalii; "
@@ -113,20 +108,12 @@ def blocks(n: dict) -> dict[str, str]:
                        f"Wykryte scenariusze mają medianę sygnału {_n(found_median, lang, 1)} odchylenia szumu, "
                        f"przeoczone {_n(missed_median, lang, 1)}; najsłabszy wykryty {_n(found_small, lang, 1)}, "
                        f"najsilniejszy przeoczony {_n(missed_big, lang, 1)}.")
-        author = f"napisał ją {model}" if note["source"] == "model" else "z szablonu kodu"
         bridge = (f"![{n['titles']['bridge'][0]}](docs/img/bridge.png)\n\n"
-                  f"Notatka do tej anomalii ({author}"
-                  f"): „{note['text']}”")
-        notes_text = (f"{from_model} z {notes['notes']} notatek (po polsku i po angielsku) napisał {model}; "
-                      f"{notes['retried']} przeszło dopiero za drugim razem, po odrzuceniu pierwszej wersji przez "
-                      f"kontrolę liczb, a pozostałe mają zdanie z szablonu kodu. W notatkach, które trafiły do "
-                      f"aplikacji, nie ma ani jednej liczby spoza arkusza faktów. Wszystkie wywołania kosztowały "
-                      f"{_n(cost, lang, 4)} USD ({_n(totals.get('input_tokens', 0), lang)} tokenów wejścia, "
-                      f"{_n(totals.get('output_tokens', 0), lang)} wyjścia).")
-        if evals:
-            notes_text += (f"\n\nEvale ({evals['cases']} przypadków × {evals['repeat']} powtórzenia, oba języki): "
-                           f"{evals['passed']} z {evals['runs']} przebiegów przeszło wszystkie testy; zmyślonych liczb "
-                           f"{evals['invented']}, koszt {_n(evals['cost_usd'], lang, 4)} USD.")
+                  f"Notatka do tej anomalii: „{note}”")
+        notes_text = (f"Notatki powstały dla wszystkich {s['anomalies']} anomalii, po polsku i po angielsku: "
+                      f"{notes['notes']} {plural_pl(notes['notes'], 'zdanie', 'zdania', 'zdań')}. "
+                      f"Kontrolę liczb przeszło {notes['passed']} z {notes['notes']}; liczb "
+                      f"spoza arkusza faktów: {notes['invented']}.")
         verdicts = (f"Wykrywanie zgłosiło {s['anomalies']} anomalii, z czego {s['false_alarms']} to fałszywe alarmy. "
                     f"Kontrole: okres bez wstrzyknięć {neg['false']} "
                     f"{alarms_pl(neg['false'])}, "
@@ -157,20 +144,11 @@ def blocks(n: dict) -> dict[str, str]:
                        f"Scenarios found have a median signal of {_n(found_median, lang, 1)} noise deviations, those "
                        f"missed {_n(missed_median, lang, 1)}; the weakest found {_n(found_small, lang, 1)}, the "
                        f"strongest missed {_n(missed_big, lang, 1)}.")
-        author = f"written by {model}" if note["source"] == "model" else "from the code template"
         bridge = (f"![{n['titles']['bridge'][0]}](docs/img/bridge.png)\n\n"
-                  f"The note on this anomaly ({author}"
-                  f"): “{note['text']}”")
-        notes_text = (f"{from_model} of {notes['notes']} notes (Polish and English) were written by {model}; "
-                      f"{notes['retried']} passed only on the second try, after the number check rejected the first, "
-                      f"and the rest carry the code's own sentence. The notes in the app hold no number outside the "
-                      f"sheet of facts. All calls cost USD {_n(cost, lang, 4)} "
-                      f"({_n(totals.get('input_tokens', 0), lang)} input and "
-                      f"{_n(totals.get('output_tokens', 0), lang)} output tokens).")
-        if evals:
-            notes_text += (f"\n\nEvals ({evals['cases']} cases × {evals['repeat']} runs, both languages): "
-                           f"{evals['passed']} of {evals['runs']} runs passed every test; invented numbers "
-                           f"{evals['invented']}, cost USD {_n(evals['cost_usd'], lang, 4)}.")
+                  f"The note on this anomaly: “{note}”")
+        notes_text = (f"Every one of the {s['anomalies']} anomalies has a note in Polish and in English: "
+                      f"{notes['notes']} sentences. {notes['passed']} of {notes['notes']} pass the number check; "
+                      f"numbers outside the sheet of facts: {notes['invented']}.")
         verdicts = (f"The check raised {s['anomalies']} anomalies, {s['false_alarms']} of them false alarms. Controls: "
                     f"{neg['false']} false alarms in the period without injections, "
                     f"{_n(control.get('false_per_month', 0), lang, 2)} a month on the shop without scenarios.\n\n"

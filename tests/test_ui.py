@@ -65,8 +65,6 @@ def results(tmp_path, monkeypatch):
                "scenarios_total": 1, "breakdowns_exact_to_grosz": 1, "breakdowns": 1, "main_cause_right": 1,
                "main_cause_graded": 1, "segments": 112}
     (tmp_path / "summary.json").write_text(json.dumps(summary), encoding="utf-8")
-    monkeypatch.setattr("sales_anomalies.explain.ENV_FILE", tmp_path / ".env")
-    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
     return report.load(tmp_path)
 
 
@@ -103,12 +101,12 @@ def test_app_views_build(results, monkeypatch):
 
 
 def test_note_and_bridge_name_the_same_amount_for_a_cause_of_several_parts():
-    from sales_anomalies import explain, i18n
+    from sales_anomalies import i18n, notes
 
     parts = [Part("conversion_mobile", "conversion", -3283.14, grosz=-328314),
              Part("conversion_desktop", "conversion", 28.12, grosz=2812)]
     b = Breakdown(5, "*|*", "conversion", "down", "2023-08-10", "2023-08-11", 3514.85, 6769.87, -325502, parts,
                   "conversion", {"orders": 485.0, "expected_orders": 934.0})
     amount = i18n.money(report.cause_total(b, "conversion"), "en", sign=True)
-    assert explain.facts(b, "en")["causes"][0]["amount"] == amount
+    assert notes.facts(b, "en")["causes"][0]["amount"] == amount
     assert amount in report.bridge_title(b)[0] and "100% of the change" in report.bridge_title(b)[0]

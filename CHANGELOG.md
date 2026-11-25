@@ -12,5 +12,6 @@ All notable changes to this project are documented here. The format follows
   a second seed.
 - Injected scenarios of nine kinds with their exact impact, and grading against them and `anomaly_data`.
 - Breakdown of every anomaly into causes in PLN that add up to the grosz (margin bridge, LMDI for volume).
-- Notes for the manager written by Claude Haiku 5.5 from the computed facts, every number checked by code; evals.
+- A one-sentence note for the manager on every anomaly, built from the computed facts, every number checked by
+  code.
 - Dash + Mantine app in the portfolio look: anomaly timeline, cause bridge, note and answer key.
