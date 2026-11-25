@@ -153,12 +153,20 @@ def series_window(r: Results, anomaly_id: int, days: int = 28) -> pd.DataFrame:
 # Titles: the takeaway first
 
 
+def cause_total(b: Breakdown, cause: str) -> float:
+    """Net PLN of one cause: all its parts (the same amount the note names)."""
+    return sum(p.grosz for p in b.parts if p.cause == cause) / 100
+
+
 def bridge_title(b: Breakdown, lang: str = "en") -> tuple[str, str]:
-    cause_total = sum(p.grosz for p in b.parts if p.cause == b.main_cause) / 100
+    total = cause_total(b, b.main_cause)
+    share = total / b.change if b.change else float("nan")
     if lang == "pl":
-        return (f"{i18n.CAUSES['pl'][b.main_cause].capitalize()}: {i18n.money(cause_total, 'pl', sign=True)} "
-                f"z {i18n.money(b.change, 'pl', sign=True)}",
-                "Od oczekiwanej wartości do rzeczywistej; części sumują się co do grosza.")
-    return (f"{i18n.CAUSES['en'][b.main_cause].capitalize()}: {i18n.money(cause_total, 'en', sign=True)} "
-            f"of {i18n.money(b.change, 'en', sign=True)}",
-            "From the expected value to the actual one; the parts add up to the grosz.")
+        return (f"Główna przyczyna: {i18n.CAUSES['pl'][b.main_cause]}, {i18n.money(total, 'pl', sign=True)}, "
+                f"czyli {i18n.percent(share, 'pl', sign=False)} zmiany",
+                "Od wartości oczekiwanej do rzeczywistej. Przyczyna może mieć kilka części (konwersja: po jednej na "
+                "urządzenie); w miedzi największa część głównej przyczyny. Części sumują się co do grosza.")
+    return (f"Main cause: {i18n.CAUSES['en'][b.main_cause]}, {i18n.money(total, 'en', sign=True)}, "
+            f"{i18n.percent(share, 'en', sign=False)} of the change",
+            "From the expected value to the actual one. A cause can have several parts (conversion: one per "
+            "device); the largest part of the main cause is in copper. The parts add up to the grosz.")

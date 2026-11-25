@@ -152,7 +152,7 @@ przyczyną zdarzenia z klucza odpowiedzi.
 **Wynik.**
 
 <!-- generated:bridge -->
-![Zwroty: +157 553 zł z +157 553 zł](docs/img/bridge.png)
+![Główna przyczyna: zwroty, +157 553 zł, czyli 100% zmiany](docs/img/bridge.png)
 
 Notatka do tej anomalii (z szablonu kodu): „15–24 lipca 2023: koszt zwrotów (Odzież) +157 553 zł (+133%) względem
 oczekiwań, głównie przez: zwroty (+157 553 zł); warto sprawdzić partię produktu z największą liczbą zwrotów.”

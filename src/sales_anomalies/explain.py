@@ -131,11 +131,12 @@ def facts(b: Breakdown, lang: str) -> dict:
     expected = b.expected
     change = b.change
     sign = 1 if change >= 0 else -1
-    moving = sorted((p for p in b.parts if sign * p.grosz > 0), key=lambda p: -abs(p.grosz))
+    # A cause is the net sum of all its parts (conversion: one part per device), the same amount the app's bridge
+    # names; the causes that move with the change, largest first.
     by_cause: dict[str, int] = {}
-    for part in moving:
+    for part in b.parts:
         by_cause[part.cause] = by_cause.get(part.cause, 0) + part.grosz
-    causes = sorted(by_cause.items(), key=lambda item: -abs(item[1]))[:TOP_PARTS]
+    causes = sorted(((c, g) for c, g in by_cause.items() if sign * g > 0), key=lambda item: -abs(item[1]))[:TOP_PARTS]
     sheet = {
         "segment": i18n.segment(b.segment, lang),
         "metric": i18n.METRICS[lang][b.metric],
