@@ -5,8 +5,8 @@
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
 [![Release](https://img.shields.io/github/v/release/tlabedzki/Sales-Anomalies)](https://github.com/tlabedzki/Sales-Anomalies/releases)
 
-A case study: a daily sales check of Lumo, a fictional online shop, that finds unusual days, splits them into causes in
-PLN and sums each up for the manager in one sentence.
+A case study: a daily check of Lumo, a fictional online shop, that finds unusual sales days and splits each into causes
+in PLN.
 
 **Problem.** The manager of an online shop sees yesterday's sales every morning but cannot tell whether a drop of a
 dozen percent is ordinary noise or a sign that something broke: a discount, the carrier, a campaign or payments on
