@@ -1,10 +1,10 @@
 """
 README images and numbers in one run: the charts (the same Plotly code as the app, drawn in headless Chrome with
-Inter from the repository) and every <!-- generated:... --> block of README.md, from output/ (python main.py) and
-the saved notes (data/explanations.json). The animated hero is scripts/make_demo_svg.py.
+Inter from the repository) and every <!-- generated:... --> block of README.md, from output/
+(python main.py). The animated hero is scripts/make_demo_svg.py.
 
-    python scripts/make_charts.py               # README in Polish (the repository is private)
-    python scripts/make_charts.py --lang en     # README in English (before it goes public)
+    python scripts/make_charts.py               # README in English (the repository is public)
+    python scripts/make_charts.py --lang pl     # README in Polish (for a private copy)
 
 Needs Chrome or Edge and requirements-dev.txt (websockets, pillow).
 """
@@ -290,7 +290,7 @@ def blocks(n: dict) -> dict[str, str]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--lang", choices=i18n.LANGS, default="pl", help="language of README.md")
+    parser.add_argument("--lang", choices=i18n.LANGS, default="en", help="language of README.md")
     parser.add_argument("--no-charts", action="store_true", help="only the README blocks")
     args = parser.parse_args()
     IMG.mkdir(parents=True, exist_ok=True)

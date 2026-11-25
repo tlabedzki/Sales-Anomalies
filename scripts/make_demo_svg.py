@@ -1,7 +1,7 @@
 """
 Build docs/img/app-demo.svg and app-demo-dark.svg, the animated demo at the top of the README.
 
-    python scripts/make_demo_svg.py [--shots DIR] [--reuse] [--quality 72] [--res 1.25]
+    python scripts/make_demo_svg.py [--lang en] [--shots DIR] [--reuse] [--quality 72] [--res 1.25]
 
 The demo is an illustration made of screenshots of the real app, not a recording. One loop of 14 s: the view rests
 on the timeline of anomalies (anomaly A in copper), the cursor clicks the dot of anomaly B, the page scrolls to B's
@@ -219,7 +219,8 @@ def css_color(value: str) -> str:
     return "#{:02x}{:02x}{:02x}".format(*parts)
 
 
-def build(shots: Path, quality: int, res: float, r: report.Results, first: int, second: int) -> dict[str, str]:
+def build(shots: Path, quality: int, res: float, r: report.Results, first: int, second: int,
+          lang: str = "en") -> dict[str, str]:
     geo = json.loads((shots / "geometry.json").read_text(encoding="utf-8"))
     check(geo, r, first, second)
     base, final = geo["base"], geo["final"]
@@ -291,7 +292,7 @@ def build(shots: Path, quality: int, res: float, r: report.Results, first: int, 
                 f'fill="{INK}" stroke="#ffffff" stroke-width="1.3" stroke-linejoin="round" filter="url(#shadow)"/>'
                 f'</g></g>')
 
-    alt = alt_text(r, second, "pl")
+    alt = alt_text(r, second, lang)
     vh = VIEW * K
     H = BAR + vh
     css = "".join(m.css) + "@media (prefers-reduced-motion:reduce){*{animation:none!important}}"
@@ -321,14 +322,15 @@ def build(shots: Path, quality: int, res: float, r: report.Results, first: int, 
     return out
 
 
-def make(shots: Path | None = None, reuse: bool = False, quality: int = 72, res: float = 1.25) -> dict:
+def make(shots: Path | None = None, reuse: bool = False, quality: int = 72, res: float = 1.25,
+         lang: str = "en") -> dict:
     r = report.load()
     first, second = choose(r)
     shots = shots or ROOT / "output" / "demo-shots"
     shots.mkdir(parents=True, exist_ok=True)
     if not (reuse and (shots / "geometry.json").exists()):
         take_screenshots(shots, first, second, {first: heading(r, first), second: heading(r, second)})
-    svgs = build(shots, quality, res, r, first, second)
+    svgs = build(shots, quality, res, r, first, second, lang)
     for theme, svg in svgs.items():
         path = OUT_DIR / ("app-demo.svg" if theme == "light" else "app-demo-dark.svg")
         path.write_text(svg, encoding="utf-8", newline="\n")
@@ -337,18 +339,20 @@ def make(shots: Path | None = None, reuse: bool = False, quality: int = 72, res:
             sys.exit(f"{path.name} is over {LIMIT // 1024} KB: lower --quality or --res.")
     demo = {"first": first, "second": second, "alt_pl": alt_text(r, second, "pl"),
             "alt_en": alt_text(r, second, "en")}
-    DEMO_JSON.write_text(json.dumps(demo, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    DEMO_JSON.write_text(json.dumps(demo, indent=1, ensure_ascii=False) + "\n", encoding="utf-8",
+                         newline="\n")
     return demo
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--lang", choices=("pl", "en"), default="en", help="language of the title and alt text")
     parser.add_argument("--shots", type=Path, help="keep the screenshots and geometry in this folder")
     parser.add_argument("--reuse", action="store_true", help="build from --shots without starting the app")
     parser.add_argument("--quality", type=int, default=72, help="WebP quality of the screenshots")
     parser.add_argument("--res", type=float, default=1.25, help="image pixels per SVG pixel")
     args = parser.parse_args()
-    make(args.shots, args.reuse, args.quality, args.res)
+    make(args.shots, args.reuse, args.quality, args.res, args.lang)
 
 
 if __name__ == "__main__":
