@@ -64,8 +64,10 @@ def blocks(n: dict) -> dict[str, str]:
     from_model = notes["from_model"]
     evals = notes["evals"] or {}
     sizes = n["sizes"]
-    found_small = float(sizes.loc[sizes["found"], "size"].min()) if sizes["found"].any() else 0.0
-    missed_big = float(sizes.loc[~sizes["found"], "size"].max()) if (~sizes["found"]).any() else 0.0
+    found_small = float(sizes.loc[sizes["found"], "signal"].min()) if sizes["found"].any() else 0.0
+    missed_big = float(sizes.loc[~sizes["found"], "signal"].max()) if (~sizes["found"]).any() else 0.0
+    missed_median = float(sizes.loc[~sizes["found"], "signal"].median()) if (~sizes["found"]).any() else 0.0
+    found_median = float(sizes.loc[sizes["found"], "signal"].median()) if sizes["found"].any() else 0.0
     model = explain.MODEL
 
     if pl:
@@ -80,8 +82,8 @@ def blocks(n: dict) -> dict[str, str]:
             f"({'wszystkie' if len(full) else ''}); obie awarie sklepu z `anomaly_data`"
             f"{'' if outages is None else f' ({outages.found} z {outages.events})'}. Każde z "
             f"{s['breakdowns']} rozbić sumuje się do zmiany co do grosza.\n"
-            f"- **Chybione:** {', '.join(x.lower() for x in none['label'])} (0 trafień): zmiany do "
-            f"{_p(missed_big, lang)} swojego segmentu giną w dziennym szumie. Z {fraud_events} oszustw z "
+            f"- **Chybione:** {', '.join(x.lower() for x in none['label'])} (0 trafień): ich zmiany mają "
+            f"medianę {_n(missed_median, lang, 1)} odchylenia dziennego szumu i giną w nim. Z {fraud_events} oszustw z "
             f"`anomaly_data` wykrywanie znalazło {fraud_found}.")
         detection = (f"![{n['titles']['timeline'][0]}](docs/img/timeline.png)\n\n"
                      f"W okresie bez wstrzyknięć ({neg['months']:.0f} miesiące) padło {neg['false']} fałszywych "
@@ -90,8 +92,9 @@ def blocks(n: dict) -> dict[str, str]:
                      f"({_n(control.get('false_per_month', 0), lang, 2)} na miesiąc).")
         recall_text = (f"![{n['titles']['recall'][0]}](docs/img/recall.png)\n\n"
                        f"![{n['titles']['sizes'][0]}](docs/img/sizes.png)\n\n"
-                       f"Najmniejszy wykryty scenariusz zmienił swój segment o {_p(found_small, lang)}, największy "
-                       f"przeoczony o {_p(missed_big, lang)}.")
+                       f"Wykryte scenariusze mają medianę sygnału {_n(found_median, lang, 1)} odchylenia szumu, "
+                       f"przeoczone {_n(missed_median, lang, 1)}; najsłabszy wykryty {_n(found_small, lang, 1)}, "
+                       f"najsilniejszy przeoczony {_n(missed_big, lang, 1)}.")
         author = f"napisał ją {model}" if note["source"] == "model" else "z szablonu kodu"
         bridge = (f"![{n['titles']['bridge'][0]}](docs/img/bridge.png)\n\n"
                   f"Notatka do tej anomalii ({author}"
@@ -119,8 +122,9 @@ def blocks(n: dict) -> dict[str, str]:
         summary = (
             f"- **What worked:** {', '.join(x.lower() for x in full['label'])} (all found); both shop outages of "
             f"`anomaly_data`. Each of the {s['breakdowns']} breakdowns adds up to its change to the grosz.\n"
-            f"- **What missed:** {', '.join(x.lower() for x in none['label'])} (none found): changes up to "
-            f"{_p(missed_big, lang)} of their segment vanish in the daily noise. Of the {fraud_events} fraud rings in "
+            f"- **What missed:** {', '.join(x.lower() for x in none['label'])} (none found): their changes have "
+            f"a median of {_n(missed_median, lang, 1)} deviations of the daily noise and vanish in it. Of the "
+            f"{fraud_events} fraud rings in "
             f"`anomaly_data` the check found {fraud_found}.")
         detection = (f"![{n['titles']['timeline'][0]}](docs/img/timeline.png)\n\n"
                      f"In the period without injections ({neg['months']:.0f} months) there were {neg['false']} false "
@@ -129,8 +133,9 @@ def blocks(n: dict) -> dict[str, str]:
                      f" a month).")
         recall_text = (f"![{n['titles']['recall'][0]}](docs/img/recall.png)\n\n"
                        f"![{n['titles']['sizes'][0]}](docs/img/sizes.png)\n\n"
-                       f"The smallest scenario found moved its segment by {_p(found_small, lang)}, the largest one "
-                       f"missed by {_p(missed_big, lang)}.")
+                       f"Scenarios found have a median signal of {_n(found_median, lang, 1)} noise deviations, those "
+                       f"missed {_n(missed_median, lang, 1)}; the weakest found {_n(found_small, lang, 1)}, the "
+                       f"strongest missed {_n(missed_big, lang, 1)}.")
         author = f"written by {model}" if note["source"] == "model" else "from the code template"
         bridge = (f"![{n['titles']['bridge'][0]}](docs/img/bridge.png)\n\n"
                   f"The note on this anomaly ({author}"

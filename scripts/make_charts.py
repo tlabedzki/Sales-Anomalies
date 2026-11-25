@@ -67,9 +67,29 @@ def recall_data(r: report.Results, lang: str) -> pd.DataFrame:
     return rows
 
 
+METRIC_OF = {"margin_sold": "margin", "return_cost": "returns", "costs": "costs", "sales": "sales",
+             "orders": "conversion"}
+
+
 def size_data(r: report.Results, lang: str) -> pd.DataFrame:
+    """
+    Signal of every scenario: its true change over the noise of its segment and metric in its days (the square root
+    of the summed daily variance of the model, widened by the weekly inflation for more than one day), as z.
+    """
     events = r.events[r.events["source"] == "scenario"].copy()
-    events["size"] = events["relative_change"].abs()
+    scores = r.scores
+    signals = []
+    for e in events.itertuples():
+        metric = METRIC_OF[e.primary]
+        segment = e.segments.split(",")[0]
+        days = scores[(scores["segment"] == segment) & (scores["metric"] == metric)
+                      & scores["date"].between(e.start, e.end)]
+        spread = float(np.sqrt(days["variance"].sum()))
+        if len(days) > 1:
+            spread *= float(days["k7_up"].mean())
+        change = e.primary_change  # PLN, or orders for conversion (the variance is in orders too)
+        signals.append(abs(change) / spread if spread > 0 else np.nan)
+    events["signal"] = signals
     events["label"] = [kind_label(k, lang) for k in events["kind"]]
     return events
 
@@ -124,19 +144,20 @@ def recall_figure(rows: pd.DataFrame, lang: str) -> go.Figure:
 
 
 def size_figure(events: pd.DataFrame, lang: str) -> go.Figure:
-    order = events.groupby("label")["size"].max().sort_values(ascending=False).index.tolist()
+    order = events.groupby("label")["signal"].max().sort_values(ascending=False).index.tolist()
     fig = go.Figure()
     for found, color, name in ((True, t.PRIMARY, "wykryte" if lang == "pl" else "found"),
                                (False, t.ACCENT, "przeoczone" if lang == "pl" else "missed")):
         part = events[events["found"] == found]
-        fig.add_scatter(x=part["size"] * 100, y=part["label"], mode="markers", name=name,
+        fig.add_scatter(x=part["signal"], y=part["label"], mode="markers", name=name,
                         marker={"color": color, "size": 11, "line": {"color": t.PAGE, "width": 1.5}},
                         hoverinfo="skip")
     fig.update_yaxes(categoryorder="array", categoryarray=order[::-1], showgrid=False, ticks="",
                      tickfont={"color": t.TEXT}, fixedrange=True, ticklabelstandoff=8)
-    fig.update_xaxes(ticksuffix="%", showgrid=True, gridcolor=t.LINE, zeroline=False,
-                     tickfont=figures._num(12, t.MUTED), fixedrange=True,
-                     range=[0, max(100, float(events["size"].max()) * 100 * 1.05)])
+    fig.update_xaxes(type="log", showgrid=True, gridcolor=t.LINE, zeroline=False, tickfont=figures._num(12, t.MUTED),
+                     fixedrange=True, tickvals=[0.5, 1, 2, 5, 10, 20, 50, 100], ticktext=["0,5" if lang == "pl"
+                                                                                       else "0.5", "1", "2", "5",
+                                                                                       "10", "20", "50", "100"])
     fig = figures._layout(fig, 30 * len(order) + 70, margin={"l": 8, "r": 8, "t": 8, "b": 8})
     fig.update_layout(showlegend=True, legend={"orientation": "h", "y": -0.18, "x": 0, "font": {"color": t.TEXT}})
     return fig
@@ -175,8 +196,8 @@ def titles(n: dict) -> dict[str, tuple[str, str]]:
     recall = n["recall"]
     full = recall[recall["found"] == recall["events"]]["label"].tolist()
     sizes = n["sizes"]
-    missed_big = float(sizes.loc[~sizes["found"], "size"].max()) if (~sizes["found"]).any() else 0.0
-    found_small = float(sizes.loc[sizes["found"], "size"].min()) if sizes["found"].any() else 0.0
+    missed_big = float(sizes.loc[~sizes["found"], "signal"].max()) if (~sizes["found"]).any() else 0.0
+    found_small = float(sizes.loc[sizes["found"], "signal"].min()) if sizes["found"].any() else 0.0
     if lang == "pl":
         return {
             "timeline": (f"{s['anomalies']} anomalii w 2023–2024: {s['hits']} prawdziwych, {s['false_alarms']} "
@@ -187,10 +208,10 @@ def titles(n: dict) -> dict[str, tuple[str, str]]:
             "recall": (f"W całości wykryte: {', '.join(x.lower() for x in full[:3])}",
                        "Ile zdarzeń każdego rodzaju znalazło wykrywanie (scenariusze wstrzyknięte i zdarzenia "
                        "oznaczone przez generator)."),
-            "sizes": (f"Przeoczone zmiany sięgały {i18n.percent(missed_big, 'pl', sign=False)} swojego segmentu, "
-                      f"najmniejsza wykryta {i18n.percent(found_small, 'pl', sign=False)}",
-                      "Wielkość scenariusza: zmiana głównej metryki w jego segmencie i dniach wobec poziomu bez "
-                      "wstrzyknięcia; petrol wykryte, miedź przeoczone."),
+            "sizes": (f"Najsilniejszy przeoczony sygnał miał {i18n.number(missed_big, 'pl', 1)} odchylenia szumu, "
+                      f"najsłabszy wykryty {i18n.number(found_small, 'pl', 1)}",
+                      "Siła sygnału scenariusza: jego prawdziwa zmiana podzielona przez dzienny szum segmentu w tych "
+                      "dniach (skala logarytmiczna); petrol wykryte, miedź przeoczone."),
             "bridge": report.bridge_title(b, "pl"),
         }
     return {
@@ -201,10 +222,10 @@ def titles(n: dict) -> dict[str, tuple[str, str]]:
         "recall": (f"Found in full: {', '.join(x.lower() for x in full[:3])}",
                    "How many events of each kind the check found (injected scenarios and events labelled by the "
                    "generator)."),
-        "sizes": (f"Missed changes reached {i18n.percent(missed_big, 'en', sign=False)} of their segment, the "
-                  f"smallest found {i18n.percent(found_small, 'en', sign=False)}",
-                  "Size of a scenario: the change of its main metric in its segment and days against the level "
-                  "without it; teal found, copper missed."),
+        "sizes": (f"The strongest missed signal was {i18n.number(missed_big, 'en', 1)} noise deviations, the weakest "
+                  f"found {i18n.number(found_small, 'en', 1)}",
+                  "Signal of a scenario: its true change divided by the daily noise of its segment in its days (log "
+                  "scale); teal found, copper missed."),
         "bridge": report.bridge_title(b, "en"),
     }
 

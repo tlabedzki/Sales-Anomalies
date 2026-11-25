@@ -57,8 +57,8 @@ w ostatnim tygodniu coś odbiegło od normy, w której części sklepu, dlaczego
 Dane są w całości syntetyczne, więc dla każdej zmiany wiadomo, czy naprawdę zaszła i dlaczego. Projekt korzysta
 z dwóch niezależnych kluczy odpowiedzi.
 
-- **Scenariusze wstrzyknięte przez projekt** (`scenarios.py`). Na danych generatora kod dopisuje 31 zdarzeń
-  dziewięciu rodzajów, np. dodatkowy rabat w jednej kategorii i jednym kanale, falę zwrotów wadliwej partii, wyższą
+- **Scenariusze wstrzyknięte przez projekt** (`scenarios.py`). Na danych generatora kod dopisuje co dwa tygodnie jedno zdarzenie
+  jednego z dziewięciu rodzajów, np. dodatkowy rabat w jednej kategorii i jednym kanale, falę zwrotów wadliwej partii, wyższą
   stawkę przewoźnika, konkurenta, który tnie ceny, kampanię, która przestaje działać, albo płatność, która nie działa
   na telefonach. Każde zdarzenie zmienia tabele tak, jak zrobiłoby to prawdziwe: niższa cena obniża też płatność,
   prowizję i późniejszy zwrot, a utracone zamówienie zabiera ze sobą przesyłkę i płatność. Wpływ w złotych to
@@ -124,8 +124,8 @@ wyjaśnia ją w co najmniej 30%.
 Najmniejszy wykryty scenariusz zmienił swój segment o 47%, największy przeoczony o 291%.
 <!-- /generated:recall -->
 
-**Co to znaczy dla kierownika.** Kontrola dzienna łapie awarie i duże przecieki. Dzienna sprzedaż Lumo waha się
-jednak o ok. 13% od prognozy nawet bez żadnego problemu, więc kilkunastoprocentowy spadek w jednym kanale albo
+**Co to znaczy dla kierownika.** Kontrola dzienna łapie awarie i duże przecieki. Dzienna sprzedaż Lumo odbiega
+jednak od prognozy wyraźnie nawet bez żadnego problemu, więc kilkunastoprocentowy spadek w jednym kanale albo
 kategorii przez parę dni zlewa się z tym szumem. Takie zmiany trzeba śledzić innymi miarami: rabat średni na linię,
 koszt paczki, odsetek zwrotów.
 
@@ -210,10 +210,10 @@ bez scenariuszy 0,54 fałszywego alarmu na miesiąc.
   linii rozrzuca się o kilkaset złotych. Lekcja: rabat warto pilnować wprost (średni rabat na linię), nie przez
   marżę.
 - **Kampanie, ruch z wyszukiwarki i konkurencja.** Model wie, kiedy kampania trwa, ale nie zna jej siły, a sprzedaż
-  kanału waha się z dnia na dzień o ponad 20%. Spadek o połowę przez trzy dni jest na granicy wykrywalności.
+  kanału mocno waha się z dnia na dzień. Spadek o połowę przez trzy dni jest na granicy wykrywalności.
   Lekcja: ruch i konwersję kanału trzeba śledzić w sesjach, nie tylko w złotych.
 - **Oszustwa z `anomaly_data`.** Przejęte konto składa kilka drogich zamówień w paru komórkach, po jednym czy dwa
-  w każdej, a dzienna sprzedaż elektroniki waha się o kilkanaście tysięcy złotych. To anomalia konta, nie segmentu.
+  w każdej, a dzienna sprzedaż elektroniki i tak mocno się waha. To anomalia konta, nie segmentu.
   Lekcja: oszustwa łapie się na poziomie klienta (wiele drogich zamówień z jednego konta), nie na sumach sprzedaży.
 - **Fałszywe alarmy.** Większość to skoki w kanale mediów społecznościowych w czasie mocniejszych niż zwykle kampanii
   i dni wokół Black Friday. To realne zmiany, tylko nie są w kluczu odpowiedzi.
