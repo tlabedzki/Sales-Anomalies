@@ -1,0 +1,22 @@
+[project]
+name = "sales-anomalies"
+version = "0.1.0"
+description = "Daily sales, margin, return and conversion anomalies of a fictional online shop, split into causes in PLN and explained by an LLM"
+requires-python = ">=3.11"
+license = "MIT"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "."]
+addopts = "-q -p no:dash"
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+extend-exclude = [".cache", "output"]
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "UP", "B", "SIM"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["sales_anomalies"]
