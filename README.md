@@ -337,6 +337,22 @@ erDiagram
 The answer key is the generator's `anomaly_data` table (not linked by keys: an event points to days, a table and an
 account) and this project's `scenario_truth` (`output/events.csv`). Amounts are net, without the 23% VAT.
 
+## Why these tools
+
+Each tool was picked for how this project reads its data: one run reads the generated tables from local files, joins
+about a million order lines with products, shipments and payments, and refits small regressions on the past every
+month. A fresh clone rebuilds everything with two commands, with no server, account, key or paid service.
+
+| Tool | What it does here and why it fits | Alternative considered |
+|---|---|---|
+| Data Generator | Generates the fictional shop with its own answer key (`anomaly_data`), and this project injects scenarios of known cause and size on top; it runs at about 10 times the default size over four years. | A shop 5 times the default left a category in one channel with too few order lines a day, and with one year of history the trend and the months could not be told apart. |
+| Parquet and pyarrow | `get_data.py` saves only the columns the check reads, with their types, and pyarrow reads the schema first, so a missing column stops the run with the command that fixes it. | – |
+| pandas and numpy | Build the daily facts of every segment and fit the expected day in numpy: a Poisson regression for counts and a logistic one for conversion, only on the past and again every month, the approach of the Farrington algorithm from disease surveillance; the versions match Data Generator, which runs in this project's environment. | – |
+| DuckDB | Computes what every sold line and every return is worth (sales, purchase cost, shipping, payment fee, commission) in one SQL query that joins four tables straight on the pandas frames, inside the process and without a server. | – |
+| Plotly | Draws the charts of the app and of the README from the same functions, so both show the same numbers. | – |
+| Dash and Mantine | The app, built from the same blocks as every app in this portfolio. | Streamlit and Gradio were ruled out for all apps in the portfolio: they sit side by side on the GitHub profile and a different look stands out. |
+| pytest | Tests on a small synthetic shop with no data files and no network, so CI checks the code without running the generator. | – |
+
 ## Project structure
 
 <details><summary>Show the tree</summary>
@@ -378,4 +394,4 @@ views.
 
 MIT, see [LICENSE](LICENSE). [Changelog](CHANGELOG.md).
 
-README last updated: 2026-11-25
+README last updated: 2026-11-27
