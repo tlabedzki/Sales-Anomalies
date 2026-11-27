@@ -387,7 +387,7 @@ pip install -r requirements-dev.txt
 python -m pytest
 ```
 
-45 tests check on a small synthetic shop (no data files and no network, about 15 s): line economics, forecasts only
+50 tests check on a small synthetic shop (no data files and no network, about 15 s): line economics, forecasts only
 from the past, scenario injection, detection, parts adding up to the grosz, the number check of the notes and the app
 views.
 
