@@ -1,11 +1,10 @@
 # Sales Anomalies
 
-[English](README.md) | **Polski**
-
 [![Tests](https://github.com/tlabedzki/Sales-Anomalies/actions/workflows/tests.yml/badge.svg)](https://github.com/tlabedzki/Sales-Anomalies/actions/workflows/tests.yml)
 ![Python 3.11](https://img.shields.io/badge/python-3.11-3776AB)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
 [![Release](https://img.shields.io/github/v/release/tlabedzki/Sales-Anomalies)](https://github.com/tlabedzki/Sales-Anomalies/releases)
+[![English](docs/img/flag-gb.svg "English")](README.md)
 
 Studium przypadku: codzienna kontrola fikcyjnego sklepu internetowego Lumo, która znajduje nietypowe dni sprzedaży
 i rozkłada każdy z nich na przyczyny w złotych.
